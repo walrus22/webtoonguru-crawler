@@ -27,32 +27,28 @@ url = "https://comic.naver.com/webtoon/weekday"
 
 src_dict = {}
 day_list = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-
-
-            
 driver.get(url)
 time.sleep(2)
 test_list = {}
 test = driver.find_elements_by_css_selector(".thumb")
 
 
-
-
-# for i in range(10):
-#     test_list[] = []
-#     test[i].find_element_by_xpath("following-sibling::a").get_attribute("href")
-#     print(test[i].find_element_by_xpath("following-sibling::a").get_attribute("title"))
-#     print("######################################################################")
+for i in range(10):
+    str_temp = test[i].find_element_by_xpath("following-sibling::a").get_attribute("href")
+    id_temp = str_temp[str_temp.index("titleId=")+8 : str_temp.index("&")] 
+    day_temp = str_temp[str_temp.index("weekday=")+8 : ]
+    title_temp = test[i].find_element_by_xpath("following-sibling::a").get_attribute("title")
+    test_list[id_temp] = []
+    test_list[id_temp].append(title_temp)
+    test_list[id_temp].append(day_temp)
+    
+print("######################################################################")   
+print(test_list)
     
     
-
-
-    
-
 # find_element return값이 뭐임? 
 # 이게 부모 추적이 가능한가?
 
-# <a href="/webtoon/list?titleId=758037&amp;weekday=mon" onclick="nclk_v2(event,'thm*m.tit','','1')" class="title" title="참교육">참교육</a>
 
 """
 TODO: ㅎㅎ
@@ -66,39 +62,3 @@ TODO: ㅎㅎ
  8. class="cnt_page"로 다음페이지 이동하면서 탐색끝까지 하던지 그건 나중에 ㄱㄱ
 """
 
-
-
-
-# import requests
-# from lxml import etree
-# import time
-# from selenium import webdriver
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.common.by import By
- 
-# # Launch Chrome browser in headless mode
-# options = webdriver.ChromeOptions()
-# options.add_argument("headless")
-# browser = webdriver.Chrome(options=options)
- 
-# # Load web page
-# browser.get("https://www.yahoo.com")
-# # Network transport takes time. Wait until the page is fully loaded
-# def is_ready(browser):
-#     return browser.execute_script(r"""
-#         return document.readyState === 'complete'
-#     """)
-# WebDriverWait(browser, 30).until(is_ready)
- 
-# # Scroll to bottom of the page to trigger JavaScript action
-# browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-# time.sleep(1)
-# WebDriverWait(browser, 30).until(is_ready)
- 
-# # Search for news headlines and print
-# elements = browser.find_elements(By.XPATH, "//h3/a[u[@class='StretchedBox']]")
-# for elem in elements:
-#     print(elem.text)
- 
-# # Close the browser once finish
-# browser.close()
