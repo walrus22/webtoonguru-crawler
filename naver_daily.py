@@ -1,25 +1,22 @@
-from ast import Try
-from re import A
+import json
 import time
+import traceback
+import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-import traceback
-import sys
-import json
 
-file = open("naver_test.json","w")
+
+file = open("naver_daily.json","w")
 
 # class Crawler:
 #     def __init__(self, base_url): # target base page 
 #         self.base_url = base_url
 #         self.id_list = []
 
-
 # try:
-
 # except Exception:
 #       print(Exception)
 #     # print(traceback.format_exc())
@@ -29,19 +26,17 @@ chrome_options.add_argument("--incognito")
 chrome_options.add_argument("--window-size=1920x1080")
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="/usr/local/bin/chromedriver") #mac
 # driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="C:/Windows/chromedriver.exe") #win
-
-# day_list = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
-
+## 집 selenium update
+ 
 start = time.time()
 url = "https://comic.naver.com/webtoon/weekday"
 driver.get(url)
 driver.implicitly_wait(100)
-test = driver.find_elements(By.CSS_SELECTOR, ".thumb") ## 집 selenium update
+test = driver.find_elements(By.CSS_SELECTOR, ".thumb")
 test_list = {}
-
 day_temp = "first"
 
-for i in range(100): # len(test)
+for i in range(len(test)): # len(test)
     str_temp = test[i].find_element(By.XPATH, "following-sibling::a").get_attribute("href")
     id_temp = str_temp[str_temp.index("titleId=") + 8 : str_temp.index("&")] 
     day = str_temp[str_temp.index("weekday=") + 8 : ]
@@ -67,9 +62,7 @@ for i in range(100): # len(test)
     test_list[id_temp].append([daily_rank]) 
         
 print("######################################################################")   
-# print(test_list)
 print("time :", time.time() - start) 
-print("######################################################################")   
 
 ############################# DETAIL PAGE #################################
 for el in test_list.values():
@@ -93,14 +86,12 @@ for el in test_list.values():
     
 driver.close()
 driver.quit()
-print("######################################################################")   
-print(test_list)
-print("######################################################################")
-print("time :", time.time() - start)    
-
 json.dump(test_list, file, separators=(',', ':'))
 file.close()
-    
+
+# print("######################################################################")   
+# print(test_list)
+print("time :", time.time() - start)    
     
 
 
