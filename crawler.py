@@ -10,7 +10,7 @@ import traceback
 import sys
 import json
 
-file = open("naver_test.json","a")
+file = open("naver_test.json","w")
 
 # try:
 
@@ -39,21 +39,17 @@ for i in range(len(test)): # len(test)
     day = str_temp[str_temp.index("weekday=") + 8 : ]
     
     if (test_list.get(id_temp) != None):
-        test_list[id_temp].append(day) # additional day
+        test_list[id_temp][3].append(day) # additional day, 3 = index of day
         continue
-           
+    else:
+        test_list[id_temp] = []
+                   
     title_temp = test[i].find_element(By.XPATH, "following-sibling::a").get_attribute("title")
-    test_list[id_temp] = []
     test_list[id_temp].append(id_temp)
     test_list[id_temp].append(str_temp) # link
     test_list[id_temp].append(title_temp) # title
-    test_list[id_temp].append(day) # day
+    test_list[id_temp].append([day]) # day
         
-    
-#['748105', 'https://comic.naver.com/webtoon/list?titleId=748105&weekday=sun', '독립일기', 'sun', '처음으로 나만의 집이 생긴다면?\n자까 작가의 나혼자 사는 이야기', '자까', '에피소드, 일상', '전체연령가', '99,999+']
-
-#
-
 print("######################################################################")   
 # print(test_list)
 print("time :", time.time() - start) 
@@ -85,14 +81,13 @@ print(test_list)
 print("######################################################################")
 print("time :", time.time() - start)    
 
-json.dump(test_list, file)
+json.dump(test_list, file, separators=(',', ':'))
 file.close()
     
 # class Crawler:
 #     def __init__(self, base_url): # target base page 
 #         self.base_url = base_url
 #         self.id_list = []
-
 
 
 """

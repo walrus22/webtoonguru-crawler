@@ -1,22 +1,25 @@
-# file = open("naver_test.txt","a")
+import json
 
+
+
+day =[]
 test = {
-    1 : [1,2],
+    
+    1 : [1, day, 3],
     2 : ["hi"],
     21: [],
     3 : [3, 'hiih']}
 
-# print(test[21])
+ 
+t = {}
+t[1] = [1, [2,3], 4]
+print(type(t[1]))
+t[1][1].append(5)
+t[1].append([4])
 
-for i in test:
-    if test[i]:
-        print(str(i) + "is not empty")
-    else: 
-        print(str(i) + "is empty")
+print(t[1])
 
-print(test.get(5) == None)  
-
-
-  
+# file = open("py_test.json","w")
+# json.dump(test, file, separators=(',', ':'))
     
 # file.close
