@@ -12,6 +12,12 @@ import json
 
 file = open("naver_test.json","w")
 
+# class Crawler:
+#     def __init__(self, base_url): # target base page 
+#         self.base_url = base_url
+#         self.id_list = []
+
+
 # try:
 
 # except Exception:
@@ -33,13 +39,22 @@ driver.implicitly_wait(100)
 test = driver.find_elements(By.CSS_SELECTOR, ".thumb") ## 집 selenium update
 test_list = {}
 
-for i in range(len(test)): # len(test)
+day_temp = "first"
+
+for i in range(100): # len(test)
     str_temp = test[i].find_element(By.XPATH, "following-sibling::a").get_attribute("href")
     id_temp = str_temp[str_temp.index("titleId=") + 8 : str_temp.index("&")] 
     day = str_temp[str_temp.index("weekday=") + 8 : ]
-    
+   
+    if day_temp != day:
+        daily_rank = 1
+    else:
+        daily_rank += 1
+    day_temp = day
+   
     if (test_list.get(id_temp) != None):
         test_list[id_temp][3].append(day) # additional day, 3 = index of day
+        test_list[id_temp][4].append(daily_rank) 
         continue
     else:
         test_list[id_temp] = []
@@ -49,12 +64,14 @@ for i in range(len(test)): # len(test)
     test_list[id_temp].append(str_temp) # link
     test_list[id_temp].append(title_temp) # title
     test_list[id_temp].append([day]) # day
+    test_list[id_temp].append([daily_rank]) 
         
 print("######################################################################")   
 # print(test_list)
 print("time :", time.time() - start) 
 print("######################################################################")   
 
+############################# DETAIL PAGE #################################
 for el in test_list.values():
     url_writer = el[1]  
     driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab
@@ -84,10 +101,7 @@ print("time :", time.time() - start)
 json.dump(test_list, file, separators=(',', ':'))
 file.close()
     
-# class Crawler:
-#     def __init__(self, base_url): # target base page 
-#         self.base_url = base_url
-#         self.id_list = []
+    
 
 
 """
