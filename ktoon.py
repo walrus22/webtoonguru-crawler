@@ -17,12 +17,17 @@ def collect_webtoon_data(base_url, genre_list, css_tag):
         ele = driver.find_elements(By.CLASS_NAME, "next")
         if len(ele) == 0:
             print("hi")
+        ###################
+        # 7.7 할일 
+        # 1. 다음페이지 움직이면서 찾기
+        # 2. 카카오 동적 탐색 (스크롤 몇번하고 하는지 아니면뭐 다른방법찾든지)
+        # 3. 
         
-            
         webtoon_elements = driver.find_elements(By.CSS_SELECTOR, css_tag) # webtoon element selection. 
         genre_tag = genre_name[count]
         count+=1
         webtoon_data_dict.update(get_element_data(webtoon_elements, genre_tag))
+        
         if 
     return webtoon_data_dict
     
