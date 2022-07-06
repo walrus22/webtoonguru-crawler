@@ -72,13 +72,13 @@ for el in test_list.values():
     driver.implicitly_wait(500)
 
     synop = driver.find_element(By.XPATH, "//div[@class='detail']/child::p").text
-    writer = driver.find_element(By.CSS_SELECTOR, ".wrt_nm").text
+    artist = driver.find_element(By.CSS_SELECTOR, ".wrt_nm").text
     genre = driver.find_element(By.CSS_SELECTOR, ".genre").text
     age_restrict = driver.find_element(By.CSS_SELECTOR, ".age").text
     like_count = driver.find_element(By.CSS_SELECTOR, ".u_cnt").text 
     
     test_list[el[0]].append(synop) # synop
-    test_list[el[0]].append(writer) # writer
+    test_list[el[0]].append(artist) # artist
     test_list[el[0]].append(genre) # genre
     test_list[el[0]].append(age_restrict) # age_restrict
     test_list[el[0]].append(like_count) # like_count

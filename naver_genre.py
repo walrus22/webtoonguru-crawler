@@ -1,10 +1,14 @@
 import json
 import time
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 ################################# function setting ###############################################
 def collect_webtoon_data(base_url, genre_list, css_tag):
@@ -13,7 +17,7 @@ def collect_webtoon_data(base_url, genre_list, css_tag):
     for genre_tag in genre_list:
         url = base_url + genre_tag
         driver.get(url)
-        webtoon_elements = driver.find_elements(By.CSS_SELECTOR, "{}".format(css_tag)) # webtoon element selection. 
+        webtoon_elements = driver.find_elements(By.CSS_SELECTOR, css_tag) # webtoon element selection. 
         webtoon_elements.pop(0) # naver 장르별 첫 thumb 무시하기!    
         webtoon_data_dict.update(get_element_data(webtoon_elements, genre_tag))
     return webtoon_data_dict
@@ -36,7 +40,7 @@ def get_element_data(webtoon_elements, genre_tag):
                 etc_status = "신작"
         if len(webtoon_elements[i].find_elements(By.XPATH, "descendant::img")) != 1:
             finish_status = "완결"
-        writer = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd/a").get_attribute("text")
+        artist = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd/a").get_attribute("text")
         update_date = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd[2]").text
         score = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd[3]/div/strong").text
         webtoon_data_dict[id] = []
@@ -47,7 +51,7 @@ def get_element_data(webtoon_elements, genre_tag):
         webtoon_data_dict[id].append(thumbnail)
         webtoon_data_dict[id].append(etc_status)
         webtoon_data_dict[id].append(finish_status)
-        webtoon_data_dict[id].append(writer)
+        webtoon_data_dict[id].append(artist)
         webtoon_data_dict[id].append(update_date)
         webtoon_data_dict[id].append(score) 
     return webtoon_data_dict
@@ -55,11 +59,13 @@ def get_element_data(webtoon_elements, genre_tag):
 ################################# initial setting ###############################################
 start = time.time()
 chrome_options = Options()
+# chrome_options.add_argument("--window-size=1920x1080")
 chrome_options.add_argument("--incognito")
-chrome_options.add_argument("--window-size=1920x1080")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--no-sandbox")
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="/usr/local/bin/chromedriver") #mac
 # driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="C:/Windows/chromedriver.exe") #win
-driver.implicitly_wait(300)
+driver.implicitly_wait(30)
 ################################################################################################
 
 file = open("naver_genre.json","w")
