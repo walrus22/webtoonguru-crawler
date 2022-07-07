@@ -100,7 +100,7 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
 ################################################################################
 
 start = time.time()
-file = open("{}.json".format(Path(__file__).stem), "w")
+file = open("json//{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
 
 # genre_list = ["1", "6", "8", "16", "109", "113"] # 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원

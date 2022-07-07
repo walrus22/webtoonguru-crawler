@@ -9,7 +9,7 @@ get_url_untill_done(driver, "https://www.mrblue.com/webtoon/wt_000047383")
 
 
 item_title = driver.find_element(By.CLASS_NAME, 'title').text
-item_date = 
+# item_date = 
 # item_thumbnail = 
 # item_etc_status = 
 # item_finish_status =
@@ -24,8 +24,11 @@ for author in driver.find_elements(By.CLASS_NAME, 'authorname'):
     else:
         item_artist += ","
     item_artist += author.text.replace(" ", "")
-        
-print(driver.find_element(By.XPATH, "//div[@class='txt-info']/div/p[2]/span[1]").text)
+
+a, b= find_date(driver.find_element(By.XPATH, "//div[@class='txt-info']/div/p[2]/span[1]").text, "완결")
+  
+print(a)
+print(b)
     
 
 print(item_title)
@@ -37,3 +40,4 @@ print(item_artist)
 # print(item_)
 # print(item_)
 
+ 
