@@ -28,9 +28,9 @@ def get_element_data(webtoon_elements, genre_tag):
         # 화수?
         etc_status = ""
         finish_status = "연재"
-        str_temp = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("onclick")
-        id = str_temp.split('\'')[3]
-        rank = str_temp.split('\'')[5]
+        item_address = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("onclick")
+        id = item_address.split('\'')[3]
+        rank = item_address.split('\'')[5]
         title = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("title")
         thumbnail = webtoon_elements[i].find_element(By.XPATH, "descendant::img").get_attribute("src")
         if len(webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")) != 1:
@@ -46,6 +46,7 @@ def get_element_data(webtoon_elements, genre_tag):
         webtoon_data_dict[id] = []
         webtoon_data_dict[id].append(genre_tag)
         webtoon_data_dict[id].append(id)
+        webtoon_data_dict[id].append(item_address)
         webtoon_data_dict[id].append(rank)
         webtoon_data_dict[id].append(title)
         webtoon_data_dict[id].append(thumbnail)
