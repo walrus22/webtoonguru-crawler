@@ -16,30 +16,39 @@ def collect_webtoon_data(base_url, genre_list, css_tag):
 def get_element_data(webtoon_elements, genre_tag):
     webtoon_data_dict = {}
     item_rank = 0
-    address_list = []
+    item_address_list = []
+    item_id_list = []
+    
     for i in range(len(webtoon_elements)): # len(webtoon_elements)
-        address_temp = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
-        item_id = address_temp[12:]
-        item_address = "https://www.mrblue.com" + address_temp
-        # 아니씨발이게 맥이랑 가져오는 형식이 다른가?
-        # 윈도우에선 address_temp가 전체 주소를 가져오고, mac에선 안가져왔는데 ㅡㅡ 씨발
-        
-        address_list.append(item_address)
+        item_address = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
+        item_id = item_address[31:]
+        item_id_list.append(item_id)
+        item_address_list.append(item_address)    
         item_rank += 1
+        
+        # address_temp = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
+        # item_id = address_temp[12:]
+        # item_address = "https://www.mrblue.com" + address_temp
+        # 아니씨발이게 맥이랑 가져오는 형식이 다른가?
+        # 윈도우에선 address_temp가 전체 주소를 가져오고, mac에선 안가져왔는데 ㅡㅡ 씨발 
+        # 7.8 뭐야 맥북에서도 전체주소 가져오네 ㅡㅡ
+        # 근본없는 사이트다운 주소 태그다
+        
         webtoon_data_dict[item_id] = []
         webtoon_data_dict[item_id].append(genre_tag)
         webtoon_data_dict[item_id].append(item_id)
         webtoon_data_dict[item_id].append(item_address)
         webtoon_data_dict[item_id].append(item_rank)
         
-    for child_url in address_list:
+    for j in range(len(webtoon_elements)):
         driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
-        get_url_untill_done(driver, child_url) 
+        get_url_untill_done(driver, item_address_list[j])
         
         item_title = driver.find_element(By.CLASS_NAME, 'title').text
-        item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//div[@class='txt-info']/div/p[2]/span[1]").text, "완결")
+        item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//div[@class='txt-info']/div/p[2]/span[1]").text, "완결", False)
         item_thumbnail = driver.find_element(By.XPATH, "//div[@class='img-box']/p/img").get_attribute("src")
         # item_etc_status = 
+        # synopsis
     
         # 그림/글 : 1명 // 그림 ~명 글 ~명 2가지 케이스 있다
         item_artist = ""
@@ -50,12 +59,12 @@ def get_element_data(webtoon_elements, genre_tag):
             else:
                 item_artist += ","
         
-        webtoon_data_dict[item_id].append(item_title)
-        webtoon_data_dict[item_id].append(item_date)
-        webtoon_data_dict[item_id].append(item_thumbnail)
-        # webtoon_data_dict[item_id].append(item_etc_status)
-        webtoon_data_dict[item_id].append(item_finish_status)
-        webtoon_data_dict[item_id].append(item_artist)
+        webtoon_data_dict[item_id_list[j]].append(item_title)
+        webtoon_data_dict[item_id_list[j]].append(item_date)
+        webtoon_data_dict[item_id_list[j]].append(item_thumbnail)
+        # webtoon_data_dict[item_id_list[j]].append(item_etc_status)
+        webtoon_data_dict[item_id_list[j]].append(item_finish_status)
+        webtoon_data_dict[item_id_list[j]].append(item_artist)
         
     return webtoon_data_dict
 
@@ -69,16 +78,17 @@ base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
 css_tag = ".img"
 
 # login
-user_id = "tuntunjun@naver.com"
+user_id = "tpa74231@gmail.com"
 user_password = "Test123!@#"
 get_url_untill_done(driver, "https://www.mrblue.com/webtoon/wt_000052546") 
 driver.find_element(By.ID, "pu-page-id").send_keys(user_id)
 driver.find_element(By.ID, "pu-page-pw").send_keys(user_password)
-time.sleep(2)
+time.sleep(5)
 driver.find_element(By.ID, "pu-page-pw").send_keys(Keys.ENTER)
 
 json.dump(collect_webtoon_data(base_url, genre_list, css_tag), file, separators=(',', ':'))
 print("time :", time.time() - start)    
+#time : 1683.8939180374146
 
 driver.close()
 driver.quit()

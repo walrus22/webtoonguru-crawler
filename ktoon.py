@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 ################################# function setting ############################
-def collect_webtoon_data(base_url, genre_list, css_tag):
+def collect_webtoon_data(base_url, genre_list, genre_name, css_tag):
     # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
     webtoon_data_dict={}
     count=0
@@ -41,12 +41,15 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
     webtoon_data_dict = {}
     item_rank = rank_basis
     item_address_list=[]
-    
+    item_id_list = []
+
     # 하나씩 클릭하면서 접근
     for i in range(len(webtoon_elements)): # len(webtoon_elements)
         item_address = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
         item_address_list.append(item_address)
         item_id = item_address[item_address.index("worksseq=") + 9:]
+        item_id_list.append(item_id)
+        
         item_rank += 1
         item_title = webtoon_elements[i].find_element(By.XPATH, "./a[@class='link']/div[@class='info']/strong").text
         item_thumbnail = webtoon_elements[i].find_element(By.XPATH, "./a[@class='link']/div[@class='thumb']/img").get_attribute("src")
@@ -59,13 +62,10 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
         webtoon_data_dict[item_id].append(item_title)
         webtoon_data_dict[item_id].append(item_thumbnail)
     
-    for j in webtoon_data_dict.values():
+    for j in range(len(webtoon_elements)):
         driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
-        get_url_untill_done(driver, j[2]) # item_address_list 쓰셈.. iterator 돌려서 append해
-        # for 
-        #
-        #
-        #
+        get_url_untill_done(driver, item_address_list[j])
+        
         ############# item_artist ###########
         artist_list = driver.find_elements(By.CLASS_NAME, "authorInfoBtn")                
         item_artist = ""
@@ -74,29 +74,16 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
             if artist_list.index(k) != len(artist_list)-1:
                 item_artist += ", "
                 
-        ############## day seperating. make func ######
-        item_date_temp = driver.find_element(By.XPATH, "//p[@class='toon_author']/span[2]").text
-        daylist = ["월", "화", "수", "목", "금", "토", "일"]
-        item_date=""
-        if item_date_temp.find("완료") != -1:
-            item_date = "완결"
-            item_finish_status = "완결"
-        else:
-            item_finish_status = "연재"
-            for d in daylist:
-                if item_date_temp.find(d) != -1:
-                    if d == "일" and item_date_temp.find("일 요일") == -1: # 만약 일 위치가 마지막이면 무시
-                        break
-                    item_date += d                            
-        ##############################################
-        webtoon_data_dict[j[1]].append(item_date)
+        item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//p[@class='toon_author']/span[2]").text, "완료", True)
+        item_synopsis = driver.find_element(By.CLASS_NAME, "toon_copy").text
+        
+        webtoon_data_dict[item_id_list[j]].append(item_date)
+        webtoon_data_dict[item_id_list[j]].append(item_finish_status)
+        webtoon_data_dict[item_id_list[j]].append(item_artist)
+        webtoon_data_dict[item_id_list[j]].append(item_synopsis)
         # webtoon_data_dict[item_id].append(etc_status)
         # etc_status = webtoon_elements[i].find_element(By.XPATH, ".") 
-        # 하트수?
-        webtoon_data_dict[j[1]].append(item_finish_status)
-        webtoon_data_dict[j[1]].append(item_artist)
     return webtoon_data_dict
-
 ################################################################################
 
 start = time.time()
@@ -109,7 +96,7 @@ genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensib
 base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"
 css_tag = ".tm7"
 
-json.dump(collect_webtoon_data(base_url, genre_list, css_tag), file, separators=(',', ':'))
+json.dump(collect_webtoon_data(base_url, genre_list, genre_name, css_tag), file, separators=(',', ':'))
 print("time :", time.time() - start)    
 
 driver.close()

@@ -1,43 +1,35 @@
 from collector_setting import *
 import json
 from pathlib import Path
+
+
+url = "https://webtoon.kakao.com/ranking"
 driver = driver_set()
+get_url_untill_done(driver, url)
 
-# get_url_untill_done(driver, "https://www.mrblue.com/webtoon/wt_000051664") 
-# get_url_untill_done(driver, "https://www.mrblue.com/webtoon/wt_000051344") 
-get_url_untill_done(driver, "https://www.mrblue.com/webtoon/wt_000047383") 
+# print(driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content"))
+# driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word overflow-hidden text-ellipsis !whitespace-nowrap s22-semibold-white leading-33 mb-1']")
+
+webtoon_elements = driver.find_elements(By.XPATH, "//div[@class='relative responsive-cell']/div/div/a") # webtoon element selection. 
+count = 0
+# print(len(webtoon_elements))
+
+genre_click_list = driver.find_elements(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word s14-bold-white light:text-black !whitespace-nowrap']")
+
+for i in range(len(genre_click_list)):
+    genre_click_list[i].click()
+    print(driver.find_elements(By.XPATH, "//div[@class='hardwareAccel w-full h-full absolute']/*")[0].get_attribute("alt") == "성인")
 
 
-item_title = driver.find_element(By.CLASS_NAME, 'title').text
-# item_date = 
-# item_thumbnail = 
-# item_etc_status = 
-# item_finish_status =
-        
-# 그림/글 : 1명 // 그림 ~명 글 ~명 2가지 케이스 있다
-item_artist = ""
-first = True
-for author in driver.find_elements(By.CLASS_NAME, 'authorname'):
+# for elements in webtoon_elements:
+#     print(len(elements.find_elements(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/*")))
+#     if len(elements.find_elements(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/*")) > 1 and elements.find_elements(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/div/*")[0].get_attribute("class") == "mx-2":
+#         print("성인")
     
-    if first == True:
-        first = False
-    else:
-        item_artist += ","
-    item_artist += author.text.replace(" ", "")
-
-a, b= find_date(driver.find_element(By.XPATH, "//div[@class='txt-info']/div/p[2]/span[1]").text, "완결")
-  
-print(a)
-print(b)
+    # if len(elements.find_elements(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/*")) > 1 and elements.find_element(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/div/child").get_attribute("class") == "mx-2"
+    
+    # print(count)
     
 
-print(item_title)
-print(item_artist)
 
-# print(item_)
-# print(item_)
-# print(item_)
-# print(item_)
-# print(item_)
-
- 
+time.sleep(10)
