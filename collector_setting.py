@@ -1,12 +1,23 @@
 import time
 import random
 import os
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys # 이동해야 하는 경우 등 키입력시 사용
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
+
+def file_open():
+    if os.getcwd()[2] == "\\":
+        file =  open(os.getcwd() + "\\json\\{}.json".format(Path(__file__).stem), "w")
+    else: 
+        file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
+    return file
+    
+file = file_open()
 
 def driver_set():
     options = Options()
@@ -17,6 +28,7 @@ def driver_set():
     options.add_argument("--no-sandbox")
     # driver = webdriver.Chrome(chrome_options=options, executable_path="C:/Windows/chromedriver.exe") #win 집 업데이트.. webdriver 다시..
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
     driver.implicitly_wait(300)
     return driver
 
