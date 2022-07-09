@@ -41,7 +41,7 @@ def get_element_data(webtoon_elements, genre_tag):
         
         item_thumbnail = driver.find_element(By.XPATH, "")
         item_title = driver.find_element(By.XPATH, "")
-        item_date, item_finish_status = find_date(item_date_temp=driver.find_element(By.XPATH, ""), end_comment= , day_keyword=, daylist_more=)
+        # item_date, item_finish_status = find_date(item_date_temp=driver.find_element(By.XPATH, ""), end_comment= , day_keyword=, daylist_more=)
         item_synopsis = driver.find_element(By.XPATH, "")
         item_artist = driver.find_element(By.XPATH, "")
         item_etc_status = driver.find_element(By.XPATH, "")
@@ -61,8 +61,10 @@ def get_element_data(webtoon_elements, genre_tag):
 
 ################################################################################
 start = time.time()
-file = open("json//{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
+
+https://webtoon.kakao.com/more
 
 genre_list = ["",] # 사이트별 설정 
 base_url = ""

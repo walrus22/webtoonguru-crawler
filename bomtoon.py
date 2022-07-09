@@ -61,13 +61,18 @@ def get_element_data(webtoon_elements, genre_tag):
 
 ################################################################################
 start = time.time()
-file = open("json//{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
+
 login_url = "https://www.bomtoon.com/"
 get_url_untill_done(driver, login_url)
 time.sleep(2)
 driver.find_elements(By.CLASS_NAME, "popCb")[1].click()
 time.sleep(2)
+
+
+user_id = "tpa74231@gmail.com"
+user_pw = "Fortest111!!!"
 login_for_adult(driver,login_url,By.CSS_SELECTOR,".btn-menu", By.ID,"user_id","user_pw")
 
 genre_list = [4, 3] # 사이트별 설정 

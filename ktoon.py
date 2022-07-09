@@ -43,7 +43,6 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
     item_address_list=[]
     item_id_list = []
 
-    # 하나씩 클릭하면서 접근
     for i in range(len(webtoon_elements)): # len(webtoon_elements)
         item_address = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
         item_address_list.append(item_address)
@@ -62,6 +61,7 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
         webtoon_data_dict[item_id].append(item_title)
         webtoon_data_dict[item_id].append(item_thumbnail)
     
+    # 하나씩 클릭하면서 접근ß
     for j in range(len(webtoon_elements)):
         driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
         get_url_untill_done(driver, item_address_list[j])
@@ -87,7 +87,7 @@ def get_element_data(webtoon_elements, genre_tag, rank_basis):
 ################################################################################
 
 start = time.time()
-file = open("json//{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
 
 # genre_list = ["1", "6", "8", "16", "109", "113"] # 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원

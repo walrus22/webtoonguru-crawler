@@ -60,7 +60,7 @@ def get_element_data(webtoon_elements, genre_tag):
 ################################################################################
 
 start = time.time()
-file = open("{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
 
 genre_list = ["romance", "bl", "drama", "fantasy", "gag", "action", "school", "mystery", "day", "gl"] # 사이트별 설정 

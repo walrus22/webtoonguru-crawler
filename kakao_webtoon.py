@@ -17,14 +17,12 @@ def collect_webtoon_data(base_url, genre_list):
         genre_click_list[i].click()
         webtoon_elements = driver.find_elements(By.XPATH, "//div[@class='relative responsive-cell']/div/div/a") # webtoon element selection. 
         for elements in webtoon_elements:
-            if len(elements.find_elements(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/*")) > 1 and elements.find_elements(By.XPATH, ".//div[@class='w-full absolute left-0 bottom-10']/div/*")[0].get_attribute("class") == "mx-2":
-                print("성인")
             webtoon_elements_url.append(elements.get_attribute("href"))
             
-        if driver.find_elements(By.XPATH, "//div[@class='hardwareAccel w-full h-full absolute']/*")[0].get_attribute("alt") == "성인":
         webtoon_elements_url.insert(0, driver.find_element(By.XPATH, "//a[@class='relative w-full h-full opacity-0 z-2 animate-fadeIn']").get_attribute("href"))
         webtoon_data_dict.update(get_element_data(webtoon_elements_url, genre_list[i]))
     return webtoon_data_dict
+
     
 def get_element_data(webtoon_elements_url, genre_tag):
     webtoon_data_dict = {}
@@ -65,7 +63,7 @@ def get_element_data(webtoon_elements_url, genre_tag):
 
 ################################################################################
 start = time.time()
-file = open("json//{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
 
 genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "horror/thriller", "comic/daily"] # 사이트별 설정 
@@ -73,7 +71,17 @@ base_url = "https://webtoon.kakao.com/ranking"
 # css_tag = ""
 
 # 장르 = 클릭으로 이동
+login_url = "https://accounts.kakao.com/login?continue=https%3A%2F%2Fkauth.kakao.com%2Foauth%2Fauthorize%3Fresponse_type%3Dcode%26state%3Db3MuMTY1NzM0MzI1NDc2MnRSTzJHRU82a1g5NVg3TWdxV0kxNzUzdUluNkJ6R01zekpvYVNoMjR6TlF5azVJdzZm%26redirect_uri%3Dhttps%253A%252F%252Fgateway-kw.kakao.com%252Fauth%252Fv1%252Foauth%252Fkakao%252Fcode%26prompt%3Dlogin%26client_id%3Da4c06dc3e5dd447ffff35a303bea612e"
+get_url_untill_done(driver, login_url)
+
+user_id = "tuntunjun@naver.com"
+user_pw = "Zmfhffldxptmxm123!@#"
+id_tag = "//input[@name='email']"
+pw_tag = "//input[@name='password']"
+
+login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
 get_url_untill_done(driver, base_url)
+
 
 json.dump(collect_webtoon_data(base_url, genre_list), file, separators=(',', ':'))
 print("time :", time.time() - start)    

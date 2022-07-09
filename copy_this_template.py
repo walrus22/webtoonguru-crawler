@@ -46,12 +46,15 @@ def get_element_data(webtoon_elements_url, genre_tag):
 ###########################################################################
 
 start = time.time()
-file = open("json//{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
 
 genre_list = ["",] # 사이트별 설정 
 base_url = ""
 css_tag = ""
+
+
+login_for_adult
 
 json.dump(collect_webtoon_data(base_url, genre_list, css_tag), file, separators=(',', ':'))
 print("time :", time.time() - start)    

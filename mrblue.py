@@ -70,7 +70,7 @@ def get_element_data(webtoon_elements, genre_tag):
 
 ################################################################################
 start = time.time()
-file = open("json//{}.json".format(Path(__file__).stem), "w")
+file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
 driver = driver_set()
 
 genre_list = ["romance", "bl", "drama", "gl", "action", "fantasy", "thriller"] # 성인있음 erotic
@@ -79,12 +79,9 @@ css_tag = ".img"
 
 # login
 user_id = "tpa74231@gmail.com"
-user_password = "Test123!@#"
-get_url_untill_done(driver, "https://www.mrblue.com/webtoon/wt_000052546") 
-driver.find_element(By.ID, "pu-page-id").send_keys(user_id)
-driver.find_element(By.ID, "pu-page-pw").send_keys(user_password)
-time.sleep(5)
-driver.find_element(By.ID, "pu-page-pw").send_keys(Keys.ENTER)
+user_pw = "Fortest111!!!"
+get_url_untill_done(driver, "https://www.mrblue.com/login?returnUrl=%2F")
+login_for_adult(driver, user_id, user_pw, "//input[@id='pu-page-id']","//input[@id='pu-page-pw']")
 
 json.dump(collect_webtoon_data(base_url, genre_list, css_tag), file, separators=(',', ':'))
 print("time :", time.time() - start)    
