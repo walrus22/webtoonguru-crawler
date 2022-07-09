@@ -1,0 +1,181 @@
+1657363166540	geckodriver	INFO	Listening on 127.0.0.1:5684
+1657363169613	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--headless" "--remote-debugging-port" "5685" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofileBOFDoC"
+*** You are running in headless mode.
+1657363169869	Marionette	INFO	Marionette enabled
+1657363169872	Marionette	INFO	Listening on port 5695
+WebDriver BiDi listening on ws://localhost:5685
+Read port: 5695
+1657363170053	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofileBOFDoC\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:5685/devtools/browser/3f993bb2-3f52-4c44-b24e-6a5e1ed60855
+1657363178258	geckodriver	INFO	Listening on 127.0.0.1:5788
+1657363181339	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--window-size=2500,1080" "--remote-debugging-port" "5789" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofile8gE4nf"
+1657363181572	Marionette	INFO	Marionette enabled
+1657363181575	Marionette	INFO	Listening on port 5799
+WebDriver BiDi listening on ws://localhost:5789
+Read port: 5799
+1657363181775	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofile8gE4nf\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:5789/devtools/browser/72ce156e-484c-4fb2-8bb4-fbb715a6ca75
+1657363230284	geckodriver	INFO	Listening on 127.0.0.1:5906
+1657363233355	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--window-size=2000,1080" "--remote-debugging-port" "5907" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofilepKStyn"
+1657363233587	Marionette	INFO	Marionette enabled
+1657363233590	Marionette	INFO	Listening on port 2449
+WebDriver BiDi listening on ws://localhost:5907
+Read port: 2449
+1657363233792	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofilepKStyn\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:5907/devtools/browser/fb52f723-e0cf-48b1-9aa7-f8c64a088d5b
+1657363282932	geckodriver	INFO	Listening on 127.0.0.1:2525
+1657363286009	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--width=2560" "--height=1440" "--remote-debugging-port" "2526" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofileGx3DHT"
+1657363286240	Marionette	INFO	Marionette enabled
+1657363286243	Marionette	INFO	Listening on port 2539
+WebDriver BiDi listening on ws://localhost:2526
+Read port: 2539
+1657363286452	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofileGx3DHT\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:2526/devtools/browser/b2b22552-f445-4a0f-827e-80311c7bc056
+1657363470188	geckodriver	INFO	Listening on 127.0.0.1:2738
+1657363473239	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--width=1920" "--height=1080" "--remote-debugging-port" "2739" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofilenDJ72p"
+1657363473472	Marionette	INFO	Marionette enabled
+1657363473475	Marionette	INFO	Listening on port 2750
+WebDriver BiDi listening on ws://localhost:2739
+Read port: 2750
+1657363473675	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofilenDJ72p\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:2739/devtools/browser/9ec01c39-dd55-4208-abf7-9d6ae11b9b5e
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+1657363485015	geckodriver	INFO	Listening on 127.0.0.1:2807
+1657363488089	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--width=1920" "--height=1080" "--remote-debugging-port" "2808" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofilemzmzoe"
+1657363488332	Marionette	INFO	Marionette enabled
+1657363488337	Marionette	INFO	Listening on port 2819
+WebDriver BiDi listening on ws://localhost:2808
+Read port: 2819
+1657363488522	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofilemzmzoe\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:2808/devtools/browser/b713ecd7-6d0c-4428-b230-cddb797fb752
+1657363662640	geckodriver	INFO	Listening on 127.0.0.1:3162
+1657363665696	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--width=1920" "--height=1080" "--remote-debugging-port" "3163" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofileArsgzE"
+1657363665931	Marionette	INFO	Marionette enabled
+1657363665935	Marionette	INFO	Listening on port 3173
+WebDriver BiDi listening on ws://localhost:3163
+Read port: 3173
+1657363666144	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ksshome\\AppData\\Local\\Temp\\rust_mozprofileArsgzE\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:3163/devtools/browser/c9e2c07b-25b5-49a1-99b3-2411afdbcc9c
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+console.warn: LoginRecipes: "getRecipes: falling back to a synchronous message for:" "https://accounts.kakao.com"
+1657366372902	geckodriver	INFO	Listening on 127.0.0.1:4283
+1657366383307	geckodriver	INFO	Listening on 127.0.0.1:4301
+1657366402161	geckodriver	INFO	Listening on 127.0.0.1:4328
+1657366421183	geckodriver	INFO	Listening on 127.0.0.1:4350
+1657366512813	geckodriver	INFO	Listening on 127.0.0.1:4432
+1657367893674	geckodriver	INFO	Listening on 127.0.0.1:11140
+1657367973141	geckodriver	INFO	Listening on 127.0.0.1:11228
+1657368975577	geckodriver	INFO	Listening on 127.0.0.1:11121
+1657369022297	geckodriver	INFO	Listening on 127.0.0.1:11170
+1657369056263	geckodriver	INFO	Listening on 127.0.0.1:11221
+1657369153197	geckodriver	INFO	Listening on 127.0.0.1:11288
+1657369220803	geckodriver	INFO	Listening on 127.0.0.1:11351
+1657369555401	geckodriver	INFO	Listening on 127.0.0.1:10878
+1657369634449	geckodriver	INFO	Listening on 127.0.0.1:10951
+1657369706629	geckodriver	INFO	Listening on 127.0.0.1:11022
+1657369779981	geckodriver	INFO	Listening on 127.0.0.1:11087
+1657369880079	geckodriver	INFO	Listening on 127.0.0.1:5084
+1657369972172	geckodriver	INFO	Listening on 127.0.0.1:5158
+1657369983385	geckodriver	INFO	Listening on 127.0.0.1:5186
+1657370049240	geckodriver	INFO	Listening on 127.0.0.1:5245
+1657370112753	geckodriver	INFO	Listening on 127.0.0.1:5303
+1657370147525	geckodriver	INFO	Listening on 127.0.0.1:5344
+1657370941627	geckodriver	INFO	Listening on 127.0.0.1:10953
+1657371004303	geckodriver	INFO	Listening on 127.0.0.1:11009
+1657371032912	geckodriver	INFO	Listening on 127.0.0.1:8491
+1657371157215	geckodriver	INFO	Listening on 127.0.0.1:8584
+1657371243873	geckodriver	INFO	Listening on 127.0.0.1:8653
+1657371439933	geckodriver	INFO	Listening on 127.0.0.1:8868
+1657371479954	geckodriver	INFO	Listening on 127.0.0.1:8943
+1657371501824	geckodriver	INFO	Listening on 127.0.0.1:8968
+1657371518010	geckodriver	INFO	Listening on 127.0.0.1:8989
+1657371598613	geckodriver	INFO	Listening on 127.0.0.1:9090
+1657371605570	geckodriver	INFO	Listening on 127.0.0.1:9105
+1657371725145	geckodriver	INFO	Listening on 127.0.0.1:10420
+1657372317198	geckodriver	INFO	Listening on 127.0.0.1:11988
+1657372334601	geckodriver	INFO	Listening on 127.0.0.1:12021
+1657372399704	geckodriver	INFO	Listening on 127.0.0.1:12086
+1657372418071	geckodriver	INFO	Listening on 127.0.0.1:12118
+1657372622009	geckodriver	INFO	Listening on 127.0.0.1:12287
+1657372639353	geckodriver	INFO	Listening on 127.0.0.1:12325
+1657372682268	geckodriver	INFO	Listening on 127.0.0.1:12368
+1657373004137	geckodriver	INFO	Listening on 127.0.0.1:9616
+1657373105207	geckodriver	INFO	Listening on 127.0.0.1:9701
+1657373177807	geckodriver	INFO	Listening on 127.0.0.1:9771
+1657373321340	geckodriver	INFO	Listening on 127.0.0.1:9877
+1657373336750	geckodriver	INFO	Listening on 127.0.0.1:9907
+1657373442862	geckodriver	INFO	Listening on 127.0.0.1:9004
+1657373464013	geckodriver	INFO	Listening on 127.0.0.1:9039
+1657373508481	geckodriver	INFO	Listening on 127.0.0.1:9088
+1657373564433	geckodriver	INFO	Listening on 127.0.0.1:9148
+1657373574178	geckodriver	INFO	Listening on 127.0.0.1:9172
+1657373612028	geckodriver	INFO	Listening on 127.0.0.1:9216
+1657373620230	geckodriver	INFO	Listening on 127.0.0.1:9244
+1657373631751	geckodriver	INFO	Listening on 127.0.0.1:9274
+1657373645816	geckodriver	INFO	Listening on 127.0.0.1:9303
+1657373672570	geckodriver	INFO	Listening on 127.0.0.1:9343
+1657373827913	geckodriver	INFO	Listening on 127.0.0.1:9478
+1657373869948	geckodriver	INFO	Listening on 127.0.0.1:9547
+1657374110527	geckodriver	INFO	Listening on 127.0.0.1:3593
+1657374534112	geckodriver	INFO	Listening on 127.0.0.1:4001
+1657374686346	geckodriver	INFO	Listening on 127.0.0.1:10424
+1657374717645	geckodriver	INFO	Listening on 127.0.0.1:10480
+1657375552303	geckodriver	INFO	Listening on 127.0.0.1:9098
+1657376755765	geckodriver	INFO	Listening on 127.0.0.1:13141
+1657376773693	geckodriver	INFO	Listening on 127.0.0.1:13193
+1657376785150	geckodriver	INFO	Listening on 127.0.0.1:13211
+1657376845322	geckodriver	INFO	Listening on 127.0.0.1:13340
+1657376906187	geckodriver	INFO	Listening on 127.0.0.1:13459
+1657376977327	geckodriver	INFO	Listening on 127.0.0.1:13553
+1657377336828	geckodriver	INFO	Listening on 127.0.0.1:4296
+1657377346892	geckodriver	INFO	Listening on 127.0.0.1:4333
+1657380791286	geckodriver	INFO	Listening on 127.0.0.1:13056
+1657380830796	geckodriver	INFO	Listening on 127.0.0.1:13154
+1657380895897	geckodriver	INFO	Listening on 127.0.0.1:13230
+1657380910630	geckodriver	INFO	Listening on 127.0.0.1:13275
+1657380980630	geckodriver	INFO	Listening on 127.0.0.1:13345
+1657381094069	geckodriver	INFO	Listening on 127.0.0.1:13445
+1657381138350	geckodriver	INFO	Listening on 127.0.0.1:13482
+1657381168913	geckodriver	INFO	Listening on 127.0.0.1:13547
+1657381260614	geckodriver	INFO	Listening on 127.0.0.1:1087
+1657381312690	geckodriver	INFO	Listening on 127.0.0.1:1167
+1657381356550	geckodriver	INFO	Listening on 127.0.0.1:1243
+1657381384591	geckodriver	INFO	Listening on 127.0.0.1:1314
+1657381421822	geckodriver	INFO	Listening on 127.0.0.1:1396
+1657381438042	geckodriver	INFO	Listening on 127.0.0.1:1450
+1657381566822	geckodriver	INFO	Listening on 127.0.0.1:1575
+1657381641467	geckodriver	INFO	Listening on 127.0.0.1:1680
+1657381667003	geckodriver	INFO	Listening on 127.0.0.1:1739
+1657381769942	geckodriver	INFO	Listening on 127.0.0.1:1904
+1657381838744	geckodriver	INFO	Listening on 127.0.0.1:12329
+1657381868692	geckodriver	INFO	Listening on 127.0.0.1:12389
+1657381976593	geckodriver	INFO	Listening on 127.0.0.1:12677
+1657382140268	geckodriver	INFO	Listening on 127.0.0.1:13010
+1657382179588	geckodriver	INFO	Listening on 127.0.0.1:13122
+1657382319366	geckodriver	INFO	Listening on 127.0.0.1:13380
+1657382326132	geckodriver	INFO	Listening on 127.0.0.1:13395
+1657382336425	geckodriver	INFO	Listening on 127.0.0.1:13434
+1657382448897	geckodriver	INFO	Listening on 127.0.0.1:4484
+1657382677706	geckodriver	INFO	Listening on 127.0.0.1:4669
+1657382748284	geckodriver	INFO	Listening on 127.0.0.1:4755
+1657382838999	geckodriver	INFO	Listening on 127.0.0.1:4859
+1657382970470	geckodriver	INFO	Listening on 127.0.0.1:5011
+1657383053628	geckodriver	INFO	Listening on 127.0.0.1:11597
+1657383364467	geckodriver	INFO	Listening on 127.0.0.1:11877
+1657383422038	geckodriver	INFO	Listening on 127.0.0.1:11994
+1657383436038	geckodriver	INFO	Listening on 127.0.0.1:12035
+1657383458973	geckodriver	INFO	Listening on 127.0.0.1:12079
+1657383500102	geckodriver	INFO	Listening on 127.0.0.1:12144

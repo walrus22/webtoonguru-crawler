@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from collector_setting import *
 import os
 
 ################################# function setting ###############################################
@@ -70,7 +71,7 @@ driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="/usr/l
 driver.implicitly_wait(30)
 ################################################################################################
 
-file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
+file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
 genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] # 사이트별 설정 
 # genre_list = ["sensibility","historical", "sports"] # 사이트별 설정 test
 base_url = "https://comic.naver.com/webtoon/genre?genre="

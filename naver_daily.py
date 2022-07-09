@@ -2,6 +2,7 @@ import json
 import time
 import traceback
 import sys
+from collector_setting import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
-file = open("naver_daily.json","w")
+file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
 
 # class Crawler:
 #     def __init__(self, base_url): # target base page 

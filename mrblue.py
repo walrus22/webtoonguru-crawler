@@ -70,7 +70,7 @@ def get_element_data(webtoon_elements, genre_tag):
 
 ################################################################################
 start = time.time()
-file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
+file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
 driver = driver_set()
 
 genre_list = ["romance", "bl", "drama", "gl", "action", "fantasy", "thriller"] # 성인있음 erotic

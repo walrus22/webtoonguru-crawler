@@ -42,11 +42,11 @@ def get_element_data(webtoon_elements_url, genre_tag):
         # item_date = 
         # item_finish_status = driver.find_element(By.XPATH, "")
         webtoon_data_dict[item_id] = [genre_tag, item_id, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist]
+    return webtoon_data_dict
 
 ###########################################################################
-
 start = time.time()
-file = open(os.getcwd() + "/sab-git-test/json/{}.json".format(Path(__file__).stem), "w")
+file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
 driver = driver_set()
 
 genre_list = ["",] # 사이트별 설정 
