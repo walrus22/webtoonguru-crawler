@@ -1,1 +1,1 @@
-pi
+print("hi")
