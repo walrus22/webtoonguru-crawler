@@ -4,15 +4,6 @@ import random
 from PIL import Image
 from urllib.request import urlopen
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys # 이동해야 하는 경우 등 키입력시 사용
-from selenium.webdriver.chrome.options import Options as chromeOptions
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.firefox.options import Options as firefoxOptions
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
-
 
 
 from collector_setting import *
@@ -86,46 +77,23 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 
 ################################################################################
 
-# def driver_set():
-#     options = firefoxOptions()
-#     # # cmd : cd C:\Program Files\Mozilla Firefox
-#     # # firefox.exe -marionette --profile C:\FirefoxTEMP
-#     # # firefox.exe --headless -marionette --profile C:\FirefoxTEMP
-#     # options.add_argument("--headless")
-#     # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828', '--connect-existing']), options=options)
-#     driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
-#     # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828']), options=options)
-#     driver.implicitly_wait(300)
-#     return driver
 
-# start = time.time()
-# file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
-# # driver = driver_set()
+import pickle
 
-# genre_list = ["romance", "bl", "drama", "gl", "action", "fantasy", "thriller"] # 성인있음 erotic
-# base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
-# css_tag = ".img"
-
-# driver = driver_set()
-# # login
-# user_id = "tpa74231@gmail.com"
-# user_pw = "Fortest111!!!"
-# get_url_untill_done(driver, "https://www.mrblue.com/login?returnUrl=%2F")
-# login_for_adult(driver, user_id, user_pw, "//input[@id='pu-page-id']","//input[@id='pu-page-pw']")
-
-# threading_link_list = []
-# for a in genre_list:
-#     threading_link_list.append(base_url.format(a))
-
-# for t_link in threading_link_list:
-#     collect_webtoon_data(driver, t_link, genre, css_tag)
-
-url = "https://www.mrblue.com/webtoon/genre/romance"
+# store
 driver = driver_set()
-get_url_untill_done(driver, url)
-webtoon_elements = driver.find_elements(By.CLASS_NAME, "img")[2]
-# b = webtoon_elements.get_attribute("data-original")
-# print(b)
-a = webtoon_elements.find_element(By.XPATH, "./a").get_attribute("href")
+get_url_untill_done(driver, "https://webtoon.kakao.com/")
+# time.sleep(50)
+# cookie_list = driver.get_cookies()
+# pickle.dump(cookie_list, open("kakao_cookies.pkl","wb"))  
+ 
+# load
+cookie_list = pickle.load(open("kakao_cookies.pkl", "rb"))
+for cookie in cookie_list:
+    driver.add_cookie(cookie)
+get_url_untill_done(driver, "https://webtoon.kakao.com/")
 
-print(a)
+time.sleep(30)
+
+# # cmd : cd C:\Program Files\Google\Chrome\Application 
+# # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"

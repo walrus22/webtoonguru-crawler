@@ -45,18 +45,22 @@ def get_element_data(webtoon_elements, genre_tag):
         artist = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd/a").get_attribute("text")
         update_date = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd[2]").text
         score = webtoon_elements[i].find_element(By.XPATH, "following-sibling::dl/dd[3]/div/strong").text
-        webtoon_data_dict[id] = []
-        webtoon_data_dict[id].append(genre_tag)
-        webtoon_data_dict[id].append(id)
-        webtoon_data_dict[id].append(item_address)
-        webtoon_data_dict[id].append(rank)
-        webtoon_data_dict[id].append(title)
-        webtoon_data_dict[id].append(thumbnail)
-        webtoon_data_dict[id].append(etc_status)
-        webtoon_data_dict[id].append(finish_status)
-        webtoon_data_dict[id].append(artist)
-        webtoon_data_dict[id].append(update_date)
-        webtoon_data_dict[id].append(score) 
+        # webtoon_data_dict[id] = []
+        # webtoon_data_dict[id].append(genre_tag)
+        # webtoon_data_dict[id].append(id)
+        # webtoon_data_dict[id].append(item_address)
+        # webtoon_data_dict[id].append(rank)
+        # webtoon_data_dict[id].append(title)
+        # webtoon_data_dict[id].append(thumbnail)
+        # webtoon_data_dict[id].append(etc_status)
+        # webtoon_data_dict[id].append(finish_status)
+        # webtoon_data_dict[id].append(artist)
+        # webtoon_data_dict[id].append(update_date)
+        # webtoon_data_dict[id].append(score) 
+        # webtoon_data_dict[item_id] = [genre_tag, item_id, item_address, item_rank, item_thumbnail, item_title, 
+        #                               item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+         
+    
     return webtoon_data_dict
 
 ################################# initial setting ###############################################

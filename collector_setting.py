@@ -22,9 +22,10 @@ def driver_set():
     # options.add_argument("--incognito")
     # options.add_argument("--window-size=1920,1080") # for chrome
     # options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
-    # options.add_argument("--headless")
-    # options.add_argument("--disable-gpu")    
-    # options.add_argument("--no-sandbox")
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")    
+    options.add_argument("--no-sandbox")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -57,15 +58,11 @@ def get_url_untill_done(driver_var, url):
     count = 1
     for i in range(1, 6): # limit trying
         try:
-            # start = time.time()
-            time.sleep(random.uniform(2,3)) # prevent to restrict
-            # print("sleep :", time.time() - start)   
+            # 시간 바꾸지마라.. 밴당해 디도스로
+            time.sleep(random.uniform(3,5)) # prevent to restrict
             driver_var.get(url)
-            # start = time.time()
-            time.sleep(random.uniform(2,3))
-            # print("sleep :", time.time() - start) 
-            print(url + " << " + str(count) + " time try, success! ") #, end=""
-            
+            time.sleep(random.uniform(3,5))
+            print(url + " << " + str(count) + " time try, success!") #, end=""
             break
         except Exception as e:
             # driver_var.implicitly_wait(5)
@@ -109,6 +106,8 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
     time.sleep(random.uniform(3,4))
+    
+    
 
 # def login_for_adult(driver, login_url, login_button_type, login_button_tag, by_type, id_tag = str, pw_tag = str):
 #     user_id = "tpa74231@gmail.com"
