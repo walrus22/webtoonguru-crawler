@@ -58,6 +58,7 @@ def get_element_data(webtoon_elements, genre_tag):
                 first = False
             else:
                 item_artist += ","
+            item_artist += author
         
         webtoon_data_dict[item_id_list[j]].append(item_title)
         webtoon_data_dict[item_id_list[j]].append(item_date)

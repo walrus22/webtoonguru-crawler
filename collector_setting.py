@@ -6,49 +6,50 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys # 이동해야 하는 경우 등 키입력시 사용
 
-from selenium.webdriver.chrome.options import Options as chromeOptions
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-from selenium.webdriver.firefox.options import Options as firefoxOptions
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
+# from selenium.webdriver.firefox.options import Options
+# from selenium.webdriver.firefox.service import Service
+# from webdriver_manager.firefox import GeckoDriverManager
+
+
+
 
 def driver_set():
-    options = firefoxOptions()
+    options = Options()
+    # options.add_argument("--incognito")
+    # options.add_argument("--window-size=1920,1080") # for chrome
+    # options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
+    # options.add_argument("--headless")
+    # options.add_argument("--disable-gpu")    
+    # options.add_argument("--no-sandbox")
     
     #### chrome #####
-    # chrome_options = chromeOptions()
-    # chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    # chrome_driver = "C:\\Python\\chromedriver.exe" # Your Chrome Driver path
-    # driver = webdriver.Chrome(chrome_driver, options=chrome_options)
+    # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    chrome_driver = "C:\\Python\\chromedriver.exe" # Your Chrome Driver path
+    driver = webdriver.Chrome(chrome_driver, options=options)
     # url = "https://webtoon.kakao.com/ranking"
     # driver.get(url)
+    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
 
     #### firefox ####
-    # firefox_options = firefoxOptions()
-    # # firefox_options.add_argument("debuggerAddress", "127.0.0.1:6000")
+    # options.add_argument("debuggerAddress", "127.0.0.1:6000")
     # firefox_driver = "C:\\Python\\geckodriver.exe" # Your Chrome Driver path
-    # driver = webdriver.Firefox(service=Service(firefox_driver, service_args=['--marionette-port', '2828', '--connect-existing']), options=firefox_options)
     # url = "https://webtoon.kakao.com/ranking"
     # driver.get(url)
 
+    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
+    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828', '--connect-existing']), options=options)
+    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828']), options=options)
     # # cmd : cd C:\Program Files\Mozilla Firefox
     # # firefox.exe -marionette --profile C:\FirefoxTEMP
     # # firefox.exe --headless -marionette --profile C:\FirefoxTEMP
 
-    # options.add_argument("--incognito")
-    # options.add_argument("--window-size=1920,1080") # for chrome
-    options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
-    options.add_argument("--headless")
-    # options.add_argument("--disable-gpu")    
-    # options.add_argument("--no-sandbox")
-    # driver = webdriver.Chrome(chrome_options=options, executable_path="C:/Windows/chromedriver.exe") #win 집 업데이트.. webdriver 다시..
-    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828', '--connect-existing']), options=options)
     driver.implicitly_wait(300)
     return driver
 
@@ -57,11 +58,11 @@ def get_url_untill_done(driver_var, url):
     for i in range(1, 6): # limit trying
         try:
             # start = time.time()
-            time.sleep(random.uniform(0, 1)) # prevent to restrict
+            time.sleep(random.uniform(2,3)) # prevent to restrict
             # print("sleep :", time.time() - start)   
             driver_var.get(url)
             # start = time.time()
-            time.sleep(random.uniform(0, 1))
+            time.sleep(random.uniform(2,3))
             # print("sleep :", time.time() - start) 
             print(url + " << " + str(count) + " time try, success! ") #, end=""
             
@@ -101,11 +102,13 @@ def find_date(item_date_temp : str, end_comment, day_keyword, daylist_more=[]): 
 
 
 def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
+    time.sleep(random.uniform(1,2))
     driver.find_element(By.XPATH, id_tag).send_keys(user_id)
+    time.sleep(random.uniform(0.5, 1))
     driver.find_element(By.XPATH, pw_tag).send_keys(user_pw)
-    time.sleep(3)
+    time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
-    time.sleep(3)
+    time.sleep(random.uniform(3,4))
 
 # def login_for_adult(driver, login_url, login_button_type, login_button_tag, by_type, id_tag = str, pw_tag = str):
 #     user_id = "tpa74231@gmail.com"

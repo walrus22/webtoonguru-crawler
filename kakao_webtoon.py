@@ -22,16 +22,16 @@ def collect_webtoon_data(base_url, genre_list):
         for elements in webtoon_elements:
             webtoon_elements_url.append(elements.get_attribute("href"))
         webtoon_elements_url.insert(0, driver.find_element(By.XPATH, "//a[@class='relative w-full h-full opacity-0 z-2 animate-fadeIn']").get_attribute("href"))
-        webtoon_data_dict.update(get_element_data(webtoon_elements_url, genre_list[i]))
+        webtoon_data_dict.update(get_element_data(driver, webtoon_elements_url, genre_list[i]))
     return webtoon_data_dict
 
     
-def get_element_data(webtoon_elements_url, genre_tag):
+def get_element_data(driver, webtoon_elements_url, genre_tag):
     webtoon_data_dict = {}
     item_rank = 0
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
-        driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
+        # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         get_url_untill_done(driver, item_address)
         
         item_id = item_address[item_address.rfind("/")+1:]
@@ -58,19 +58,19 @@ def get_element_data(webtoon_elements_url, genre_tag):
         title_temp.click()
         time.sleep(random.uniform(0,1))
         
-        itme_adult = False
+        item_adult = False
         date_finish_temp = driver.find_elements(By.XPATH, "//div[@class='mx-20 -mt-2']/div[1]/*") # div가 
         data_string = ""
         for date_element in date_finish_temp:
             if date_element.get_attribute("alt") == "성인":
-                itme_adult = True
+                item_adult = True
             else:
                 data_string += date_element.text
         item_date, item_finish_status = find_date(data_string, "완결", False)
         
         # item_etc_status = driver.find_element(By.XPATH, "")
         webtoon_data_dict[item_id] = [genre_tag, item_id, item_address, item_rank, item_thumbnail, item_title, 
-                                      item_date, item_finish_status, item_synopsis, item_artist, itme_adult]
+                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
         #, 
         
     return webtoon_data_dict

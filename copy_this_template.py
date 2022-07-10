@@ -39,9 +39,11 @@ def get_element_data(webtoon_elements_url, genre_tag):
         item_synopsis = driver.find_element(By.XPATH, "")
         item_artist = driver.find_element(By.XPATH, "")
         item_etc_status = driver.find_element(By.XPATH, "")
+        item_adult = 
         # item_date = 
         # item_finish_status = driver.find_element(By.XPATH, "")
-        webtoon_data_dict[item_id] = [genre_tag, item_id, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist]
+        webtoon_data_dict[item_id] = [genre_tag, item_id, item_address, item_rank, item_thumbnail, 
+                                      item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 ###########################################################################

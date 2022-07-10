@@ -3,7 +3,6 @@ import time
 import random
 from PIL import Image
 from urllib.request import urlopen
-from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys # 이동해야 하는 경우 등 키입력시 사용
@@ -14,77 +13,119 @@ from selenium.webdriver.firefox.options import Options as firefoxOptions
 from selenium.webdriver.firefox.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 
-#### chrome #####
-# chrome_options = chromeOptions()
-# chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-# chrome_driver = "C:\\Python\\chromedriver.exe" # Your Chrome Driver path
-# driver = webdriver.Chrome(chrome_driver, options=chrome_options)
-# url = "https://webtoon.kakao.com/ranking"
-# driver.get(url)
-
-# # cmd : cd C:\Program Files\Google\Chrome\Application 
-# # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
-
-#### firefox ####
-firefox_options = firefoxOptions()
-# firefox_options.add_argument("debuggerAddress", "127.0.0.1:6000")
-firefox_driver = "C:\\Python\\geckodriver.exe" # Your Chrome Driver path
-driver = webdriver.Firefox(service=Service(firefox_driver, service_args=['--marionette-port', '2828', '--connect-existing']), options=firefox_options)
-##################
-
-url = "https://webtoon.kakao.com/content/%EA%B2%80%EB%B9%A8%EB%A1%9C-%EB%A0%88%EB%B2%A8%EC%97%85/2922"
-# url = "https://webtoon.kakao.com/content/%EC%9D%B4%ED%86%A0%EB%A1%9D-%EB%B3%B4%ED%86%B5%EC%9D%98/1351"
-driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-print()
-driver.get(url)
-time.sleep(1)
 
 
-fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
-if fore_temp.tag_name == "video":
-    foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
+from collector_setting import *
+import json
+from pathlib import Path
+
+################################# function setting ############################
+def collect_webtoon_data(url, genre_tag, css_tag):
+    # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
+    webtoon_data_dict={}
+    driver = driver_set()
+    get_url_untill_done(driver, url)
+    webtoon_elements = driver.find_elements(By.CSS_SELECTOR, css_tag) # webtoon element selection. 
+    webtoon_data_dict.update(get_element_data(driver, webtoon_elements, genre_tag))
+    return webtoon_data_dict
     
-else :
-    foreground = Image.open(urlopen(fore_temp.find_element(By.XPATH, "./img").get_attribute("src"))).convert("RGBA")
+def get_element_data(driver, webtoon_elements, genre_tag):
+    webtoon_data_dict = {}
+    item_rank = 0
+    item_address_list = []
+    item_id_list = []
     
-foreground.show()
+    for i in range(len(webtoon_elements)): # len(webtoon_elements)
+        item_address = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
+        item_id = item_address[31:]
+        item_id_list.append(item_id)
+        item_address_list.append(item_address)    
+        item_rank += 1
+        
+        # address_temp = webtoon_elements[i].find_element(By.XPATH, "./a").get_attribute("href")
+        # item_id = address_temp[12:]
+        # item_address = "https://www.mrblue.com" + address_temp
+        # 아니씨발이게 맥이랑 가져오는 형식이 다른가?
+        # 윈도우에선 address_temp가 전체 주소를 가져오고, mac에선 안가져왔는데 ㅡㅡ 씨발 
+        # 7.8 뭐야 맥북에서도 전체주소 가져오네 ㅡㅡ
+        # 근본없는 사이트다운 주소 태그다
+        
+        webtoon_data_dict[item_id] = []
+        webtoon_data_dict[item_id].append(genre_tag)
+        webtoon_data_dict[item_id].append(item_id)
+        webtoon_data_dict[item_id].append(item_address)
+        webtoon_data_dict[item_id].append(item_rank)
+        
+    for j in range(len(webtoon_elements)):
+        driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't')
+        get_url_untill_done(driver, item_address_list[j])
+        
+        item_title = driver.find_element(By.CLASS_NAME, 'title').text
+        item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//div[@class='txt-info']/div/p[2]/span[1]").text, "완결", False)
+        item_thumbnail = driver.find_element(By.XPATH, "//div[@class='img-box']/p/img").get_attribute("src")
+        # item_etc_status = 
+        # synopsis
     
-    
-# Image.open(urlopen(driver.find_element(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/picture/source[2]").get_attribute("srcset"))).convert("RGBA")
+        # 그림/글 : 1명 // 그림 ~명 글 ~명 2가지 케이스 있다
+        item_artist = ""
+        first = True
+        for author in driver.find_elements(By.CLASS_NAME, 'authorname'):
+            if first == True:
+                first = False
+            else:
+                item_artist += ","
+        
+        webtoon_data_dict[item_id_list[j]].append(item_title)
+        webtoon_data_dict[item_id_list[j]].append(item_date)
+        webtoon_data_dict[item_id_list[j]].append(item_thumbnail)
+        # webtoon_data_dict[item_id_list[j]].append(item_etc_status)
+        webtoon_data_dict[item_id_list[j]].append(item_finish_status)
+        webtoon_data_dict[item_id_list[j]].append(item_artist)
+        
+    return webtoon_data_dict
 
-print((fore_temp.tag_name))
-# foreground = Image.open(urlopen(driver.find_element(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/picture/source[2]").get_attribute("srcset"))).convert("RGBA")
+################################################################################
 
-# if 
+# def driver_set():
+#     options = firefoxOptions()
+#     # # cmd : cd C:\Program Files\Mozilla Firefox
+#     # # firefox.exe -marionette --profile C:\FirefoxTEMP
+#     # # firefox.exe --headless -marionette --profile C:\FirefoxTEMP
+#     # options.add_argument("--headless")
+#     # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828', '--connect-existing']), options=options)
+#     driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
+#     # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828']), options=options)
+#     driver.implicitly_wait(300)
+#     return driver
 
-
-# cmd : cd C:\Program Files\Mozilla Firefox
-# firefox.exe -marionette --profile C:\FirefoxTEMP
-
-# # def driver_set():
-# #     options = Options()
-# #     options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
-# #     options.add_argument
-# #     driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
-# #     driver.implicitly_wait(300)
-
-# # url = "https://webtoon.kakao.com/ranking"
+# start = time.time()
+# file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
 # # driver = driver_set()
-# # get_url_untill_done(driver, url)
 
-# time.sleep(100)
+# genre_list = ["romance", "bl", "drama", "gl", "action", "fantasy", "thriller"] # 성인있음 erotic
+# base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
+# css_tag = ".img"
 
-# time.sleep(3)
+# driver = driver_set()
+# # login
+# user_id = "tpa74231@gmail.com"
+# user_pw = "Fortest111!!!"
+# get_url_untill_done(driver, "https://www.mrblue.com/login?returnUrl=%2F")
+# login_for_adult(driver, user_id, user_pw, "//input[@id='pu-page-id']","//input[@id='pu-page-pw']")
 
-# item_title = title_temp.text
-# item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
-# item_artist = driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']/p[2]").text
-# time.sleep(1)
-# title_temp.click()
-# time.sleep(1)
+# threading_link_list = []
+# for a in genre_list:
+#     threading_link_list.append(base_url.format(a))
 
+# for t_link in threading_link_list:
+#     collect_webtoon_data(driver, t_link, genre, css_tag)
 
+url = "https://www.mrblue.com/webtoon/genre/romance"
+driver = driver_set()
+get_url_untill_done(driver, url)
+webtoon_elements = driver.find_elements(By.CLASS_NAME, "img")[2]
+# b = webtoon_elements.get_attribute("data-original")
+# print(b)
+a = webtoon_elements.find_element(By.XPATH, "./a").get_attribute("href")
 
-# print()
-
-# print()
+print(a)
