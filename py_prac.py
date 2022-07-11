@@ -77,26 +77,6 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 
 ################################################################################
 
-
-driver = driver_set()
-url = "https://www.lezhin.com/ko/comic/ceos_crooked_love"
-
-get_url_untill_done(driver, url)
-
-driver.find_element(By.XPATH, "//button[@class='comicInfo__btnShowExtend']").click()
-
-item_synopsis_list = driver.find_elements(By.XPATH, "//div[@class='comicInfoExtend__synopsis']/p")
-for i in range(len(item_synopsis_list)):
-    if i == 0:
-        item_synopsis = item_synopsis_list[i].text
-    else:
-        item_synopsis += "\n" + item_synopsis_list[i].text
-  
-# a['1'][1] = "mon"
-# a['1'][1] += ", tue"
-
-print('1' )
-# print('2' in a)
-# print('3' in a)
-
-    
+st1r = "마음을 훔친 남자[성인판]19세이상"
+st1r = st1r[:st1r.find("19세이상") ]
+print(st1r)

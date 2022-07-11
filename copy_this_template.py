@@ -9,16 +9,16 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
 
     # login with cookie 
     driver = driver_set()
-    get_url_untill_done(driver, "LOGIN URL")
+    get_url_untill_done(driver, "LOGIN_URL")
     for cookie in cookie_list:
         driver.add_cookie(cookie)
     get_url_untill_done(driver, url)
     
     # collect item url    
-    webtoon_elements = driver.find_elements(By.XPATH, "Your element tag") # webtoon element selection. 
+    webtoon_elements = driver.find_elements(By.XPATH, "Your_Element_tag") # webtoon element selection. 
     print(len(webtoon_elements)) # for check
     for element in webtoon_elements:
-        webtoon_elements_url.append(element.find_element(By.XPATH, "Your elemet URL Path").get_attribute("href"))
+        webtoon_elements_url.append(element.find_element(By.XPATH, "Your_elemet_URL_Path").get_attribute("href"))
     
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
@@ -32,9 +32,9 @@ def collect_webtoon_data_without_cookie(shared_dict, url, genre_tag):
     # collect item url    
     driver = driver_set()
     get_url_untill_done(driver, url)
-    webtoon_elements = driver.find_elements(By.XPATH, "Your element tag") # webtoon element selection. 
+    webtoon_elements = driver.find_elements(By.XPATH, "Your_element_tag") # webtoon element selection. 
     for element in webtoon_elements:
-        webtoon_elements_url.append(element.find_element(By.XPATH, "Your elemet URL Path").get_attribute("href"))
+        webtoon_elements_url.append(element.find_element(By.XPATH, "Your_elemet_URL_Path").get_attribute("href"))
     
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     id_tag = "//input[@='']"
     pw_tag = "//input[@='']"
     driver = driver_set()
-    get_url_untill_done(driver, "LOGIN PAGE URL")
+    get_url_untill_done(driver, "LOGIN_PAGE_URL")
     login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
     cookie_list = driver.get_cookies()
     driver.close()
