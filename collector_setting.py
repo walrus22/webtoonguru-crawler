@@ -15,19 +15,23 @@ def driver_set():
     options = Options()
     # options.add_argument("--incognito")
     options.add_argument("--window-size=1920,1080") # for chrome
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     # options.add_argument("--disable-gpu")    
     # options.add_argument("--no-sandbox")
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    # options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+    
     # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
     # chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
     # driver = webdriver.Chrome(chrome_driver, options=options)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
+    # mac: sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+    # http://localhost:9222/ 접속되는지 확인
+    
     driver.set_window_position(2560, 0) # for imac dual monior
 
     driver.implicitly_wait(30)
@@ -85,13 +89,11 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
     time.sleep(random.uniform(2,3))
 
-# def is_adult(driver, xpath_tag, key_word, your_method):
-#     item_adult = driver.find_element(By.XPATH, xpath_tag)
-#     item_adult.your
-#     if item_adult.find(key_word) != -1: # adult
-#         item_adult = True
-#     else:
-#         item_adult = False
+def is_adult(item_adult_string, key_word):
+    if item_adult_string.find(key_word) != -1: # adult
+        return True
+    else:
+        return False
     
         
     

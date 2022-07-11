@@ -15,10 +15,10 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
     get_url_untill_done(driver, url)
     
     # collect item url    
-    webtoon_elements = driver.find_elements(By.XPATH, "Your_Element_tag") # webtoon element selection. 
+    webtoon_elements = driver.find_elements(By.XPATH, "Your_Element_tag //[@class='']") # webtoon element selection. 
     print(len(webtoon_elements)) # for check
     for element in webtoon_elements:
-        webtoon_elements_url.append(element.find_element(By.XPATH, "Your_elemet_URL_Path").get_attribute("href"))
+        webtoon_elements_url.append(element.find_element(By.XPATH, "Your_elemet_URL_Path //[@class='']").get_attribute("href"))
     
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
@@ -32,9 +32,9 @@ def collect_webtoon_data_without_cookie(shared_dict, url, genre_tag):
     # collect item url    
     driver = driver_set()
     get_url_untill_done(driver, url)
-    webtoon_elements = driver.find_elements(By.XPATH, "Your_element_tag") # webtoon element selection. 
+    webtoon_elements = driver.find_elements(By.XPATH, "Your_element_tag //[@class='']") # webtoon element selection. 
     for element in webtoon_elements:
-        webtoon_elements_url.append(element.find_element(By.XPATH, "Your_elemet_URL_Path").get_attribute("href"))
+        webtoon_elements_url.append(element.find_element(By.XPATH, "Your_elemet_URL_Path //[@class='']").get_attribute("href"))
     
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
@@ -51,18 +51,18 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         item_rank += 1
         # item_rank = webtoon_elements[i].find_element(By.XPATH, "") # choose one
         
-        item_id = driver.find_element(By.XPATH, "")
+        item_id = driver.find_element(By.XPATH, "//[@class='']")
         item_id = item_address[:]
         item_id = item_address[item_address.rfind("/")+1:]
         
-        item_thumbnail = driver.find_element(By.XPATH, "")
-        item_title = driver.find_element(By.XPATH, "")
-        item_date, item_finish_status = find_date(item_date_temp=driver.find_element(By.XPATH, ""), end_comment= , day_keyword=, daylist_more=)
+        item_thumbnail = driver.find_element(By.XPATH, "//[@class='']")
+        item_title = driver.find_element(By.XPATH, "//[@class='']")
+        # item_date, item_finish_status = find_date(item_date_temp=driver.find_element(By.XPATH, ""), end_comment= , day_keyword=, daylist_more=)
         # item_date = 
         # item_finish_status = driver.find_element(By.XPATH, "")
-        item_synopsis = driver.find_element(By.XPATH, "")
-        item_artist = driver.find_element(By.XPATH, "")
-        item_adult = driver.find_element(By.XPATH, "")
+        item_synopsis = driver.find_element(By.XPATH, "//[@class='']")
+        item_artist = driver.find_element(By.XPATH, "//[@class='']")
+        item_adult = driver.find_element(By.XPATH, "//[@class='']")
         webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
@@ -78,6 +78,7 @@ def multip_without_cookie(shared_dict, url_list, genre_list, cookie_list):
     pool = Pool(len(url_list)) 
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_without_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
+        time.sleep(random.uniform(0.7,1.5))
     pool.close()
     pool.join()     
 
@@ -108,7 +109,8 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_list, cookie_list) # choose one
     multip_without_cookie(shared_dict, url_list, genre_list)
-    json.dump(shared_dict.copy(), file, separators=(',', ':'))
+    shared_dict_copy = shared_dict.copy()
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
     print("time :", time.time() - start)    
     file.close()
     

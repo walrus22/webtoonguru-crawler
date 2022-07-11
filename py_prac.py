@@ -77,6 +77,13 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 
 ################################################################################
 
-st1r = "마음을 훔친 남자[성인판]19세이상"
-st1r = st1r[:st1r.find("19세이상") ]
-print(st1r)
+
+driver = driver_set()
+url = "https://onestory.co.kr/display/rank/webtoon/DP26002?title=%EC%9B%B9%ED%88%B0%20%EB%9E%AD%ED%82%B9"
+get_url_untill_done(driver, url)
+
+# driver.find_elements(By.XPATH, "//div[@class='ListItem']")[1].click()
+print(driver.find_elements(By.XPATH, "//a[@class='ItemRendererLink ranking']")[0].get_attribute("href"))
+
+
+time.sleep(30)
