@@ -69,6 +69,7 @@ def multip_without_cookie(shared_dict, url_list, genre_list):
 if __name__ == '__main__':
     start = time.time()
     file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    print(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)))
     genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
     base_url = "https://comic.naver.com/webtoon/genre?genre={}  "
     url_list=[]

@@ -77,10 +77,27 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 
 ################################################################################
 
+# get login cookies
+user_id = "tpa74231@gmail.com"
+user_pw = "Fortest111!!!"
+id_tag = "//input[@name='username']"
+pw_tag = "//input[@name='password']"
+driver = driver_set()
+get_url_untill_done(driver, "https://www.lezhin.com/ko/login?redirect=%2Fko#email")
+login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
+cookie_list = driver.get_cookies()
+driver.close()
+driver.quit()
 
-a = {'1': ['1', 'good', 'to'],
-     '2': ['2', 'hi', 'bye']}
+driver = driver_set()
+get_url_untill_done(driver, "https://www.lezhin.com/ko/login?redirect=%2Fko#email")
+for cookie in cookie_list:
+    driver.add_cookie(cookie)
+get_url_untill_done(driver, "https://www.lezhin.com/ko/ranking/detail?genre=romance&type=realtime")
 
-a['1'][1] = "mon"
-a['1'][1] += ", tue"
-print(a) 
+# 19 button click
+driver.find_element(By.XPATH, "//span[@class='contentMode supports__item']").click()
+time.sleep(2)
+
+webtoon_elements = driver.find_elements(By.CSS_SELECTOR, ".lzComic__item") # webtoon element selection. 
+print(len(webtoon_elements)) # for check

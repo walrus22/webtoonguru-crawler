@@ -16,10 +16,10 @@ def driver_set():
     # options.add_argument("--incognito")
     # options.add_argument("--window-size=1920,1080") # for chrome
     # options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
-    # options.add_argument("--headless")
-    options.add_argument("--disable-gpu")    
-    options.add_argument("--no-sandbox")
-    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_argument("--headless")
+    # options.add_argument("--disable-gpu")    
+    # options.add_argument("--no-sandbox")
+    # options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
@@ -30,7 +30,7 @@ def driver_set():
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
 
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(30)
     return driver
 
 def get_url_untill_done(driver_var, url):
@@ -38,9 +38,9 @@ def get_url_untill_done(driver_var, url):
     for i in range(1, 6): # limit trying
         try:
             # 시간 바꾸지마라.. 밴당해 디도스로
-            time.sleep(random.uniform(3,5)) # prevent to restrict
+            # time.sleep(random.uniform(3,5)) # prevent to restrict
             driver_var.get(url)
-            time.sleep(random.uniform(3,5))
+            # time.sleep(random.uniform(3,5))
             print(url + " << " + str(count) + " time try, success!") #, end=""
             break
         except Exception as e:
@@ -78,13 +78,12 @@ def find_date(item_date_temp : str, end_comment, day_keyword, daylist_more=[]): 
 
 
 def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
-    time.sleep(random.uniform(1,2))
     driver.find_element(By.XPATH, id_tag).send_keys(user_id)
-    time.sleep(random.uniform(0.5, 1))
+    time.sleep(random.uniform(1, 2))
     driver.find_element(By.XPATH, pw_tag).send_keys(user_pw)
     time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
-    time.sleep(random.uniform(3,4))
+    time.sleep(random.uniform(2,3))
 
 # def is_adult(driver, xpath_tag, key_word, your_method):
 #     item_adult = driver.find_element(By.XPATH, xpath_tag)

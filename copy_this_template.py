@@ -62,10 +62,9 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         # item_finish_status = driver.find_element(By.XPATH, "")
         item_synopsis = driver.find_element(By.XPATH, "")
         item_artist = driver.find_element(By.XPATH, "")
-        item_etc_status = driver.find_element(By.XPATH, "")
         item_adult = driver.find_element(By.XPATH, "")
-        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, 
-                                      item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, item_title, 
+                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
@@ -95,9 +94,11 @@ if __name__ == '__main__':
     # get login cookies
     user_id = ""
     user_pw = ""
+    id_tag = "//input[@='']"
+    pw_tag = "//input[@='']"
     driver = driver_set()
-    get_url_untill_done(driver, "")
-    login_for_adult(driver, user_id, user_pw, "//input[@id='pu-page-id']","//input[@id='pu-page-pw']")
+    get_url_untill_done(driver, "LOGIN PAGE URL")
+    login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
     cookie_list = driver.get_cookies()
     driver.close()
     driver.quit()
