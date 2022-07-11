@@ -14,21 +14,21 @@ from webdriver_manager.chrome import ChromeDriverManager
 def driver_set():
     options = Options()
     # options.add_argument("--incognito")
-    # options.add_argument("--window-size=1920,1080") # for chrome
-    # options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
+    options.add_argument("--window-size=1920,1080") # for chrome
     options.add_argument("--headless")
     # options.add_argument("--disable-gpu")    
     # options.add_argument("--no-sandbox")
-    # options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
-    chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
-    driver = webdriver.Chrome(chrome_driver, options=options)
-    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
+    # driver = webdriver.Chrome(chrome_driver, options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
+    driver.set_window_position(2560, 0) # for imac dual monior
 
     driver.implicitly_wait(30)
     return driver
