@@ -118,8 +118,5 @@ if __name__ == '__main__':
     print("time :", time.time() - start)    
     file.close()
     
-    
-    print("?")
-    
 
    

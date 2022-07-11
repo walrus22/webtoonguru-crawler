@@ -33,7 +33,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-        get_url_untill_done(driver, item_address)™
+        get_url_untill_done(driver, item_address)
         item_rank += 1
         item_id = item_address[item_address.rfind("/")+1:]
         item_thumbnail = driver.find_element(By.XPATH, "//picture[@class='comicInfo__cover']/source").get_attribute("srcset")
@@ -42,28 +42,37 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         # item_finish_status = 이거도 안나옴 ㅡㅡ;
         item_date = "None"
         item_finish_status = "None"
-        item_artist = driver.find_element(By.XPATH, "")
+        
+        item_artist_list = driver.find_elements(By.XPATH, "//div[@class='comicInfo__artist']/a")
+        time.sleep(0.5)
+        for i in range(len(item_artist_list)):
+            if i == 0 :
+                item_artist = item_artist_list[i].text
+            else : 
+                item_artist += "," + item_artist_list[i].text
+        
         item_adult = driver.find_element(By.XPATH, "//span[@class='comicInfo__rating']").text
         if item_adult.find("19세") != -1: # adult
             item_adult = True
         else:
             item_adult = False
-        item_synopsis = ""
-        item_synopsis_list = driver.find_elements(By.XPATH, "//div[@class='comicInfoExtend__synopsis']/p")
-        for i in len(item_synopsis_list):
-            if i == 0:
-                item_synopsis += item_synopsis_list[i]
-            else:
-                item_synopsis += "\n"
-                item_synopsis += item_synopsis_list[i]          
             
+        driver.find_element(By.XPATH, "//button[@class='comicInfo__btnShowExtend']").click()
+        time.sleep(0.5)
+        item_synopsis_list = driver.find_elements(By.XPATH, "//div[@class='comicInfoExtend__synopsis']/p")
+        for i in range(len(item_synopsis_list)):
+            if i == 0:
+                item_synopsis = item_synopsis_list[i].text
+            else:
+                item_synopsis += "\n" + item_synopsis_list[i].text    
+
         webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, 
                                       item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(1) 
-    for i in range(1):  
+    pool = Pool(len(url_list)) 
+    for i in range(len(url_list)):
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
     pool.close()
     pool.join()       

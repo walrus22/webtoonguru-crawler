@@ -77,40 +77,26 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 
 ################################################################################
 
-# # get login cookies
-# user_id = "tpa74231@gmail.com"
-# user_pw = "Fortest111!!!"
-# id_tag = "//input[@name='username']"
-# pw_tag = "//input[@name='password']"
-# driver = driver_set()
-# get_url_untill_done(driver, "https://www.lezhin.com/ko/login?redirect=%2Fko#email")
-# login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
-# cookie_list = driver.get_cookies()
-# driver.close()
-# driver.quit()
 
-# driver = driver_set()
-# get_url_untill_done(driver, "https://www.lezhin.com/ko/login?redirect=%2Fko#email")
-# for cookie in cookie_list:
-#     driver.add_cookie(cookie)
-# get_url_untill_done(driver, "https://www.lezhin.com/ko/ranking/detail?genre=romance&type=realtime")
+driver = driver_set()
+url = "https://www.lezhin.com/ko/comic/ceos_crooked_love"
 
-# # 19 button click
-# driver.find_element(By.XPATH, "//span[@class='contentMode supports__item']").click()
-# time.sleep(2)
+get_url_untill_done(driver, url)
 
-# webtoon_elements = driver.find_elements(By.CSS_SELECTOR, ".lzComic__item") # webtoon element selection. 
-# print(len(webtoon_elements)) # for check
+driver.find_element(By.XPATH, "//button[@class='comicInfo__btnShowExtend']").click()
 
+item_synopsis_list = driver.find_elements(By.XPATH, "//div[@class='comicInfoExtend__synopsis']/p")
+for i in range(len(item_synopsis_list)):
+    if i == 0:
+        item_synopsis = item_synopsis_list[i].text
+    else:
+        item_synopsis += "\n" + item_synopsis_list[i].text
+  
+# a['1'][1] = "mon"
+# a['1'][1] += ", tue"
 
-a = {'1': ['1', 'good', 'to'],
-     '2': ['2', 'hi', 'bye']}
-
-a['1'][1] = "mon"
-a['1'][1] += ", tue"
-
-print('1' in a)
-print('2' in a)
-print('3' in a)
+print('1' )
+# print('2' in a)
+# print('3' in a)
 
     
