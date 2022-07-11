@@ -33,7 +33,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-        get_url_untill_done(driver, item_address)
+        get_url_untill_done(driver, item_address)™
         item_rank += 1
         item_id = item_address[item_address.rfind("/")+1:]
         item_thumbnail = driver.find_element(By.XPATH, "//picture[@class='comicInfo__cover']/source").get_attribute("srcset")

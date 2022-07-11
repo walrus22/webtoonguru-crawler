@@ -16,7 +16,7 @@ def driver_set():
     # options.add_argument("--incognito")
     # options.add_argument("--window-size=1920,1080") # for chrome
     # options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     # options.add_argument("--disable-gpu")    
     # options.add_argument("--no-sandbox")
     # options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -38,9 +38,9 @@ def get_url_untill_done(driver_var, url):
     for i in range(1, 6): # limit trying
         try:
             # 시간 바꾸지마라.. 밴당해 디도스로
-            # time.sleep(random.uniform(3,5)) # prevent to restrict
+            time.sleep(random.uniform(0,1)) # prevent to restrict
             driver_var.get(url)
-            # time.sleep(random.uniform(3,5))
+            time.sleep(random.uniform(0,1))
             print(url + " << " + str(count) + " time try, success!") #, end=""
             break
         except Exception as e:

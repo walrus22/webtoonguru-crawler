@@ -11,7 +11,6 @@ def collect_webtoon_data_without_cookie(shared_dict, url, genre_tag):
     driver = driver_set()
     get_url_untill_done(driver, url)
     webtoon_elements = driver.find_elements(By.CSS_SELECTOR, ".thumb") # webtoon element selection. 
-    print(len(webtoon_elements))
     webtoon_elements.pop(0) # naver 장르별 첫 thumb 무시하기!    
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
@@ -31,8 +30,6 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         get_url_untill_done(driver, item_address)
         item_rank += 1
         item_id = item_address[item_address.rfind("=")+1:]
-        print(item_id)
-        print(type(item_id))
         
         item_thumbnail = driver.find_element(By.XPATH, "//div[@class='comicinfo']/div/a/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//div[@class='detail']/h2/span[1]").text
@@ -70,6 +67,7 @@ if __name__ == '__main__':
     start = time.time()
     file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
     print(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)))
+    # genre_list = ["historical", "sports"] 
     genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
     base_url = "https://comic.naver.com/webtoon/genre?genre={}  "
     url_list=[]
@@ -80,42 +78,41 @@ if __name__ == '__main__':
     manager = Manager()
     shared_dict = manager.dict()
     multip_without_cookie(shared_dict, url_list, genre_list)
+    shared_dict_copy = shared_dict.copy()
     
     # get date from daily page
     driver = driver_set()
     driver.get("https://comic.naver.com/webtoon/weekday")
     daily_elements = driver.find_elements(By.CSS_SELECTOR, ".thumb")
-    shared_dict_copy = shared_dict.copy()
+    
     
     for daily_element in daily_elements:
         str_temp = daily_element.find_element(By.XPATH, "following-sibling::a").get_attribute("href")
         id_temp = str_temp[str_temp.index("titleId=") + 8 : str_temp.index("&")] 
-        print(id_temp)
-        print(type(id_temp))
-        day_temp = str_temp[str_temp.index("weekday=") + 8 : ]
-        
-        if day_temp == "mon":
-            day_temp = "월"
-        elif day_temp == "tue":
-            day_temp = "화"
-        elif day_temp == "wed":
-            day_temp = "수"
-        elif day_temp == "thu":
-            day_temp = "목"
-        elif day_temp == "fri":
-            day_temp = "금"
-        elif day_temp == "sat":
-            day_temp = "토"
-        elif day_temp == "sun":
-            day_temp = "일"
-        else:
-            print("something wrong")
-        
-        if shared_dict_copy[id_temp][6] == "완결":
-            shared_dict_copy[id_temp][6] = day_temp             
-        else:
-            shared_dict_copy[id_temp][6] += "," 
-            shared_dict_copy[id_temp][6] += day_temp 
+        if id_temp in shared_dict_copy:
+            day_temp = str_temp[str_temp.index("weekday=") + 8 : ]
+            if day_temp == "mon":
+                day_temp = "월"
+            elif day_temp == "tue":
+                day_temp = "화"
+            elif day_temp == "wed":
+                day_temp = "수"
+            elif day_temp == "thu":
+                day_temp = "목"
+            elif day_temp == "fri":
+                day_temp = "금"
+            elif day_temp == "sat":
+                day_temp = "토"
+            elif day_temp == "sun":
+                day_temp = "일"
+            else:
+                print("something wrong")
+            if shared_dict_copy[id_temp][6] == "완결":
+                item_finish_status = "연재"
+                shared_dict_copy[id_temp][6] = day_temp             
+            else:
+                shared_dict_copy[id_temp][6] += "," 
+                shared_dict_copy[id_temp][6] += day_temp 
     
     json.dump(shared_dict.copy(), file, separators=(',', ':'))
     print("time :", time.time() - start)    
