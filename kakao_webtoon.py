@@ -80,10 +80,8 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         item_date, item_finish_status = find_date(data_string, "완결", False)
         
         # item_etc_status = driver.find_element(By.XPATH, "")
-        webtoon_data_dict[item_id] = [genre_tag, item_id, item_address, item_rank, item_thumbnail, item_title, 
-                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
-        
-        
+        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, 
+                                      item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 # def multip(shared_dict, url_list, genre_list, cookie_list):
@@ -116,7 +114,15 @@ if __name__ == '__main__':
     manager = Manager()
     shared_dict = manager.dict()
     multip(shared_dict, base_url, genre_list)
-    # multip(shared_dict, base_url, genre_list, cookie_list)
+    
+    
+    # find date and finish_status from weekday page
+    
+    driver = driver_set
+    
+    
+    
+    
     json.dump(shared_dict.copy(), file, separators=(',', ':'))
     print("time :", time.time() - start)    
     file.close()

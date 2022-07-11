@@ -10,48 +10,27 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-# from selenium.webdriver.firefox.options import Options
-# from selenium.webdriver.firefox.service import Service
-# from webdriver_manager.firefox import GeckoDriverManager
-
-
-
 
 def driver_set():
     options = Options()
     # options.add_argument("--incognito")
     # options.add_argument("--window-size=1920,1080") # for chrome
     # options.add_argument("--width=1920"); options.add_argument("--height=1080"); #for firefox
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_argument("--disable-gpu")    
     options.add_argument("--no-sandbox")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-    chrome_driver = "C:\\Python\\chromedriver.exe" # Your Chrome Driver path
+    # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
+    chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
     driver = webdriver.Chrome(chrome_driver, options=options)
-    # url = "https://webtoon.kakao.com/ranking"
-    # driver.get(url)
     # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
 
-    #### firefox ####
-    # options.add_argument("debuggerAddress", "127.0.0.1:6000")
-    # firefox_driver = "C:\\Python\\geckodriver.exe" # Your Chrome Driver path
-    # url = "https://webtoon.kakao.com/ranking"
-    # driver.get(url)
-
-    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
-    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828', '--connect-existing']), options=options)
-    # driver = webdriver.Firefox(service=Service(GeckoDriverManager().install(), service_args=['--marionette-port', '2828']), options=options)
-    # # cmd : cd C:\Program Files\Mozilla Firefox
-    # # firefox.exe -marionette --profile C:\FirefoxTEMP
-    # # firefox.exe --headless -marionette --profile C:\FirefoxTEMP
-
-    driver.implicitly_wait(300)
+    driver.implicitly_wait(10)
     return driver
 
 def get_url_untill_done(driver_var, url):
@@ -106,21 +85,16 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
     time.sleep(random.uniform(3,4))
-    
-    
 
-# def login_for_adult(driver, login_url, login_button_type, login_button_tag, by_type, id_tag = str, pw_tag = str):
-#     user_id = "tpa74231@gmail.com"
-#     user_pw = "Fortest111!!!"
-#     get_url_untill_done(driver, login_url)
-#     driver.find_element(login_button_type, login_button_tag).click()
+# def is_adult(driver, xpath_tag, key_word, your_method):
+#     item_adult = driver.find_element(By.XPATH, xpath_tag)
+#     item_adult.your
+#     if item_adult.find(key_word) != -1: # adult
+#         item_adult = True
+#     else:
+#         item_adult = False
     
-#     driver.find_element(by_type, id_tag).send_keys(user_id)
-#     driver.find_element(by_type, pw_tag).send_keys(user_pw)
-#     time.sleep(3)
-#     driver.find_element(by_type, pw_tag).send_keys(Keys.ENTER)
-#     time.sleep(3)
-    
+        
     
 """
 파이썬 웹툰데이타 클래스를 만들까? 만들어서 instance 로 id, title.. 저장하는게 더 빠르거나 깔끔하려나? 

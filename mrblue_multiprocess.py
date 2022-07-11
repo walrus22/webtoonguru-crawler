@@ -7,12 +7,15 @@ from multiprocessing import Pool, Manager
 def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
     webtoon_elements_url = [] 
-    driver = driver_set()
+    
     # login cookie
+    driver = driver_set()
     get_url_untill_done(driver, "https://www.mrblue.com/login?returnUrl=%2F")
     for cookie in cookie_list:
         driver.add_cookie(cookie)
     get_url_untill_done(driver, url)
+    
+    # collect item url 
     webtoon_elements = driver.find_elements(By.CLASS_NAME, "img") # webtoon element selection. 
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
@@ -54,7 +57,6 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
                                     item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
-################################################################################
 def multip(shared_dict, url_list, genre_list, cookie_list):
     pool = Pool(len(url_list)) #
     for i in range(len(url_list)):  
@@ -62,6 +64,7 @@ def multip(shared_dict, url_list, genre_list, cookie_list):
         # pool.map(collect_webtoon_data, args = {url_list[i], genre_list[i], ".img"})
     pool.close()
     pool.join()     
+################################################################################
 
 if __name__ == '__main__':
     start = time.time()

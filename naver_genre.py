@@ -1,16 +1,7 @@
-import json
-import time
-from pathlib import Path
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from collector_setting import *
-import os
+import json
+from pathlib import Path
+from multiprocessing import Pool, Manager
 
 ################################# function setting ###############################################
 def collect_webtoon_data(base_url, genre_list, css_tag):
@@ -63,17 +54,6 @@ def get_element_data(webtoon_elements, genre_tag):
     
     return webtoon_data_dict
 
-################################# initial setting ###############################################
-start = time.time()
-chrome_options = Options()
-# chrome_options.add_argument("--window-size=1920x1080")
-chrome_options.add_argument("--incognito")
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--no-sandbox")
-driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="/usr/local/bin/chromedriver") #mac
-# driver = webdriver.Chrome(chrome_options=chrome_options, executable_path="C:/Windows/chromedriver.exe") #win
-driver.implicitly_wait(30)
-################################################################################################
 
 file = open(os.path.join(os.getcwd(), "json", "{}test.json".format(Path(__file__).stem)), "w")
 genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] # 사이트별 설정 

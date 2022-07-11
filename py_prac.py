@@ -78,22 +78,9 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 ################################################################################
 
 
-import pickle
+a = {'1': ['1', 'good', 'to'],
+     '2': ['2', 'hi', 'bye']}
 
-# store
-driver = driver_set()
-get_url_untill_done(driver, "https://webtoon.kakao.com/")
-# time.sleep(50)
-# cookie_list = driver.get_cookies()
-# pickle.dump(cookie_list, open("kakao_cookies.pkl","wb"))  
- 
-# load
-cookie_list = pickle.load(open("kakao_cookies.pkl", "rb"))
-for cookie in cookie_list:
-    driver.add_cookie(cookie)
-get_url_untill_done(driver, "https://webtoon.kakao.com/")
-
-time.sleep(30)
-
-# # cmd : cd C:\Program Files\Google\Chrome\Application 
-# # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
+a['1'][1] = "mon"
+a['1'][1] += ", tue"
+print(a) 
