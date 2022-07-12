@@ -32,7 +32,9 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_
         else: 
             item_adult = True
         webtoon_elements_url.append([element.find_element(By.XPATH, "./a").get_attribute("href"), item_adult])
-        
+    
+    webtoon_elements_url = webtoon_elements_url[:4]
+    
     driver.implicitly_wait(30)
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_name))
     driver.close()
@@ -62,7 +64,7 @@ def get_element_data(driver, webtoon_elements_url, genre_name):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
-    pool = Pool(len(url_list)) 
+    pool = Pool(1) 
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], genre_name[i], cookie_list))
     pool.close()
@@ -70,7 +72,7 @@ def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = [4, 3] # 사이트별 설정 
     genre_name = ["bl", "romance"] 
     base_url = "https://www.bomtoon.com/main/rank"

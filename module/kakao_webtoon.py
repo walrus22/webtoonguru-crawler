@@ -43,7 +43,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         item_id = item_address[item_address.rfind("/")+1:]
         item_rank += 1
-        get_url_untill_done(driver, item_address, 0, 0) # s
+        get_url_untill_done(driver, item_address) # s
         fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
         if fore_temp.tag_name == "video":
             foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
@@ -55,6 +55,9 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))) 
         item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
+        
+        
+        
         driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
         time.sleep(random.uniform(1,2))
         
@@ -94,7 +97,7 @@ def multip(shared_dict, url_list, genre_list):
 
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "horror/thriller", "comic/daily"] # 사이트별 설정 
     base_url = "https://webtoon.kakao.com/ranking"
     

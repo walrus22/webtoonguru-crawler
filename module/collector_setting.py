@@ -15,9 +15,9 @@ def driver_set():
     options = Options()
     # options.add_argument("--incognito")
     options.add_argument("--window-size=1920,1080") # for chrome
-    options.add_argument("--headless")
-    # options.add_argument("--disable-gpu")    
-    # options.add_argument("--no-sandbox")
+    # options.add_argument("--headless")
+    options.add_argument("--disable-gpu")    
+    options.add_argument("--no-sandbox")
     # options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
@@ -84,8 +84,9 @@ def find_date(item_date_temp : str, end_comment, day_keyword, daylist_more=[]): 
 
 
 def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
+    time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, id_tag).send_keys(user_id)
-    time.sleep(random.uniform(1, 2))
+    time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(user_pw)
     time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)

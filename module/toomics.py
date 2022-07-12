@@ -68,7 +68,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag, adult):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list, adult):
-    pool = Pool(3) # prevent 403
+    pool = Pool(1) # prevent 403
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list, adult))
         time.sleep(random.uniform(0.7,1.5))
@@ -78,7 +78,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list, adult):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     # genre_list = ["8"] 
     # genre_name = ["school/action"] 
     genre_list = ["8", "1066", "5", "1065", "2570", "1444", "1443", "1441", "7"]

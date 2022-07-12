@@ -64,7 +64,7 @@ def multip_cookie(shared_dict, url_list, genre_name):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["115", "116", "121", "69", "112", "119"] 
     genre_name = ["fantasy", "drama", "romance", "romance+fantasy", "historical", "bl"]  # 소년 = fantasy
     

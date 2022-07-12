@@ -58,7 +58,7 @@ def get_element_data(driver, item_address, genre_tag, i, item_adult):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(len(url_list)) 
+    pool = Pool(1) 
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
         time.sleep(random.uniform(0.7,1.5))
@@ -68,7 +68,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     # genre_list = ["26007"] 
     # genre_name = ["daily"] # 성인을 맨뒤로 놔서, 중복있는 경우 adult=true
     genre_list = ["26002", "26009", "26003", "26006", "26005", "26007", "26001", "26004","26011"] 

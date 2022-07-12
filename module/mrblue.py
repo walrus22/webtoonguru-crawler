@@ -58,7 +58,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     return webtoon_data_dict
 
 def multip(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(len(url_list)) #
+    pool = Pool(1) #
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
         # pool.map(collect_webtoon_data, args = {url_list[i], genre_list[i], ".img"})
@@ -68,7 +68,7 @@ def multip(shared_dict, url_list, genre_list, cookie_list):
 
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     url_list=[]
     base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
     # genre_list = ["gl"] # 성인있음 erotic

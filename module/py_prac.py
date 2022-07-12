@@ -78,9 +78,10 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 ################################################################################
 
 
+
 driver = driver_set()
 url = "https://webtoon.kakao.com/content/%ED%99%94%ED%8F%90%EA%B0%9C%ED%98%81/1877"
-get_url_untill_done(driver, url, 1, 2)
+get_url_untill_done(driver, url)
 fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
 if fore_temp.tag_name == "video":
     foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
@@ -90,11 +91,14 @@ background = Image.open(urlopen(driver.find_element(By.XPATH, "//picture[@class=
 background.paste(foreground, (20, 150), foreground) # fore: 710x600 , back: 750x13??
 img = background.crop((0,0,750,750))
 img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))) 
-# img.save('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id)) # mac 위에거로 될꺼임 아마
-# item_thumbnail = open('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id), 'r')  # mac
 item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))
 item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
-driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
+# driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
+
+
+driver.execute_script("window.scrollBy(0,500)")
+
+
 
 time.sleep(5)
 # click_temp = driver.find_element(By.XPATH,"//li[@class='mode1'] | //li[@class='mode1 active']")

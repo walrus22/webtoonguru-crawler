@@ -71,7 +71,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(len(url_list)) 
+    pool = Pool(1) 
     for i in range(len(url_list)):
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
     pool.close()
@@ -80,7 +80,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["romance", "bl", "drama", "fantasy", "gag", "action", "school", "mystery", "day", "gl"] # 사이트별 설정 
     base_url = "https://www.lezhin.com/ko/ranking/detail?genre={}&type=realtime"
     url_list=[]

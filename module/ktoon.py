@@ -82,7 +82,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(len(url_list)) 
+    pool = Pool(1) 
     for i in range(len(url_list)):  #len(url_list)
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
     pool.close()
@@ -91,7 +91,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
     base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"

@@ -86,7 +86,7 @@ def multip_without_cookie(shared_dict, url_list, genre_list, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["", "", "", "", "", "", "", "", "", ""] 
     base_url = ""
     url_list=[]
