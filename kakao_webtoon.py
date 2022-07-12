@@ -15,7 +15,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
     # login with cookie
     driver = driver_set()
     get_url_untill_done(driver, "https://webtoon.kakao.com/")
-    cookie_list = pickle.load(open("kakao_cookies.pkl", "rb"))
+    cookie_list = pickle.load(open("kakao_cookies_imac.pkl", "rb"))
     for cookie in cookie_list:
         driver.add_cookie(cookie)
     get_url_untill_done(driver, url)   
@@ -43,7 +43,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         item_id = item_address[item_address.rfind("/")+1:]
         item_rank += 1
-        get_url_untill_done(driver, item_address, 0.4, 0.7) # s
+        get_url_untill_done(driver, item_address, 0, 0) # s
         fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
         if fore_temp.tag_name == "video":
             foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
@@ -52,10 +52,8 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         background = Image.open(urlopen(driver.find_element(By.XPATH, "//picture[@class='bg-content-home']/source").get_attribute("srcset"))).convert("RGBA")
         background.paste(foreground, (20, 150), foreground) # fore: 710x600 , back: 750x13??
         img = background.crop((0,0,750,750))
-        img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))) 
-        # img.save('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id)) # mac 위에거로 될꺼임 아마
-        # item_thumbnail = open('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id), 'r')  # mac
-        item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))
+        img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))) 
+        item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
         driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
         time.sleep(random.uniform(1,2))
@@ -87,10 +85,10 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
 
 # def multip(shared_dict, url_list, genre_list, cookie_list):
 def multip(shared_dict, url_list, genre_list):
-    pool = Pool(1) #len(genre_list)
+    pool = Pool(1) # kakao 멀티프로세싱 x
     for i in range(len(genre_list)):  #len(genre_list)
+        time.sleep(30)
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list, genre_list[i], i))
-        time.sleep(random.uniform(1,3))
     pool.close()
     pool.join()   
 

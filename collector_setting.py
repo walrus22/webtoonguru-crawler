@@ -15,7 +15,7 @@ def driver_set():
     options = Options()
     # options.add_argument("--incognito")
     options.add_argument("--window-size=1920,1080") # for chrome
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     # options.add_argument("--disable-gpu")    
     # options.add_argument("--no-sandbox")
     # options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -38,7 +38,7 @@ def driver_set():
     driver.implicitly_wait(30)
     return driver
 
-def get_url_untill_done(driver_var, url, random_min=2, random_max=3):
+def get_url_untill_done(driver_var, url, random_min=3, random_max=5):
     count = 1
     for i in range(1, 6): # limit trying
         try:

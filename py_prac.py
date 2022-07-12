@@ -78,18 +78,27 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 ################################################################################
 
 
-# driver = driver_set()
-# url = "https://www.toomics.com/webtoon/top100/genre/8"
-# get_url_untill_done(driver, url)
+driver = driver_set()
+url = "https://webtoon.kakao.com/content/%ED%99%94%ED%8F%90%EA%B0%9C%ED%98%81/1877"
+get_url_untill_done(driver, url, 1, 2)
+fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
+if fore_temp.tag_name == "video":
+    foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
+else :
+    foreground = Image.open(urlopen(fore_temp.find_element(By.XPATH, "./img").get_attribute("src"))).convert("RGBA")
+background = Image.open(urlopen(driver.find_element(By.XPATH, "//picture[@class='bg-content-home']/source").get_attribute("srcset"))).convert("RGBA")
+background.paste(foreground, (20, 150), foreground) # fore: 710x600 , back: 750x13??
+img = background.crop((0,0,750,750))
+img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))) 
+# img.save('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id)) # mac 위에거로 될꺼임 아마
+# item_thumbnail = open('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id), 'r')  # mac
+item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))
+item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
+driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
 
+time.sleep(5)
 # click_temp = driver.find_element(By.XPATH,"//li[@class='mode1'] | //li[@class='mode1 active']")
 # click_temp.click()
 # time.sleep(30)
 
 
-if __name__ == '__main__':
-    manager = Manager()
-    shared_dict = manager.dict()
-    shared_dict['1'] = ['3','4','5']
-    shared_dict['2'] = ['6','4','5']
-    print('2' in shared_dict)

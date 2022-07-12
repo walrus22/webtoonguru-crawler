@@ -55,10 +55,9 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_name):
-    pool = Pool(1) 
+    pool = Pool(1) # kakao 멀티프로세싱 x
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_name[i]))
-        time.sleep(random.uniform(0.7,1.5))
     pool.close()
     pool.join()     
 
