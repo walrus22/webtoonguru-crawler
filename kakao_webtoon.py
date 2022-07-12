@@ -41,11 +41,9 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-        get_url_untill_done(driver, item_address)
-
         item_id = item_address[item_address.rfind("/")+1:]
         item_rank += 1
-        
+        get_url_untill_done(driver, item_address, 0.4, 0.7) # s
         fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
         if fore_temp.tag_name == "video":
             foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
@@ -54,18 +52,23 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         background = Image.open(urlopen(driver.find_element(By.XPATH, "//picture[@class='bg-content-home']/source").get_attribute("srcset"))).convert("RGBA")
         background.paste(foreground, (20, 150), foreground) # fore: 710x600 , back: 750x13??
         img = background.crop((0,0,750,750))
-        img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))) 
+        img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))) 
         # img.save('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id)) # mac 위에거로 될꺼임 아마
         # item_thumbnail = open('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id), 'r')  # mac
-        time.sleep(random.uniform(1,2))
-        item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))
-        title_temp = driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']/p[1]")
-        item_title = title_temp.text
+        item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
-        item_artist = driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']/p[2]").text.replace(" ", "")
+        driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
         time.sleep(random.uniform(1,2))
-        title_temp.click()
-        time.sleep(random.uniform(1,2))
+        
+        item_title = driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word mt-8 s22-semibold-white']").text
+        item_artist_list = driver.find_elements(By.XPATH, "//div[@class='flex mb-7']")
+        item_artist_list.pop()
+        item_artist = ""
+        for i in range(len(item_artist_list)):
+            if i == 0:
+                item_artist += item_artist_list[i].find_element(By.XPATH, "./dd").text
+            else:
+                item_artist += "," + item_artist_list[i].find_element(By.XPATH, "./dd").text     
         
         item_adult = False
         date_finish_temp = driver.find_elements(By.XPATH, "//div[@class='mx-20 -mt-2']/div[1]/*") # div가 
@@ -84,7 +87,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
 
 # def multip(shared_dict, url_list, genre_list, cookie_list):
 def multip(shared_dict, url_list, genre_list):
-    pool = Pool(3) #len(genre_list)
+    pool = Pool(1) #len(genre_list)
     for i in range(len(genre_list)):  #len(genre_list)
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list, genre_list[i], i))
         time.sleep(random.uniform(1,3))

@@ -38,19 +38,20 @@ def driver_set():
     driver.implicitly_wait(30)
     return driver
 
-def get_url_untill_done(driver_var, url):
+def get_url_untill_done(driver_var, url, random_min=2, random_max=3):
     count = 1
     for i in range(1, 6): # limit trying
         try:
             # 시간 바꾸지마라.. 밴당해 디도스로
-            time.sleep(random.uniform(2,3)) # prevent to restrict
+            time.sleep(random.uniform(random_min,random_max)) # prevent to restrict
             driver_var.get(url)
-            time.sleep(random.uniform(2,3))
+            time.sleep(random.uniform(random_min,random_max))
             print(url + " << " + str(count) + " time try, success!") #, end=""
             break
         except Exception as e:
             # driver_var.implicitly_wait(5)
-            print(str(e) + " << " + url + " << " + str(count) + " time try, failed!")
+            # print(str(e) + " << " + url + " << " + str(count) + " time try, failed!")
+            print(url + " << " + str(count) + " time try, failed.")
             # time.sleep(3) # without headless
             count+=1
             if i == 5:

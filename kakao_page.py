@@ -18,13 +18,14 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag):
     
     # click see more button
     driver.find_element(By.XPATH, "//div[@class='css-hg8e5']/div/div[2]/a").click()
-    time.sleep(0.5)
+    time.sleep(1)
     
     # collect item url   
     webtoon_elements = driver.find_elements(By.XPATH, "//div[@class='css-j3o65g']/a") # webtoon element selection. 
     for element in webtoon_elements:
         webtoon_elements_url.append(element.get_attribute("href"))
     driver.implicitly_wait(30)
+    print(len(webtoon_elements_url))
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
     return shared_dict  
@@ -54,8 +55,8 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_name):
-    pool = Pool(len(url_list)) 
-    for i in range(1):  
+    pool = Pool(1) 
+    for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_name[i]))
         time.sleep(random.uniform(0.7,1.5))
     pool.close()
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     # get login session cookie
     # driver = driver_set()
     # get_url_untill_done(driver, "https://page.kakao.com/main")
-    # time.sleep(60) # time for login
+    # time.sleep(50) # time for login
     # cookie_list = driver.get_cookies()
     # pickle.dump(cookie_list, open("kakao_page_cookies.pkl","wb"))    
     # driver.close()
