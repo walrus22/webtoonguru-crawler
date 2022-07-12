@@ -71,6 +71,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
     pool = Pool(len(url_list)) 
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
+        time.sleep(random.uniform(0.7,1.5))
     pool.close()
     pool.join()     
 

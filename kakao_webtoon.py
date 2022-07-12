@@ -18,7 +18,6 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
     cookie_list = pickle.load(open("kakao_cookies.pkl", "rb"))
     for cookie in cookie_list:
         driver.add_cookie(cookie)
-    get_url_untill_done(driver, "https://webtoon.kakao.com/") 
     get_url_untill_done(driver, url)   
     
     # click to move
@@ -33,8 +32,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
     webtoon_elements_url.insert(0, driver.find_element(By.XPATH, "//a[@class='relative w-full h-full opacity-0 z-2 animate-fadeIn']").get_attribute("href"))
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
-    
-    return 
+    return shared_dict
 
     
 def get_element_data(driver, webtoon_elements_url, genre_tag):
@@ -59,15 +57,15 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))) 
         # img.save('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id)) # mac 위에거로 될꺼임 아마
         # item_thumbnail = open('/Users/kss/Documents/GitHub/sab-git-test/kakao_image/{}.png'.format(item_id), 'r')  # mac
-        
+        time.sleep(random.uniform(1,2))
         item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))
         title_temp = driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']/p[1]")
         item_title = title_temp.text
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
-        item_artist = driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']/p[2]").text
+        item_artist = driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']/p[2]").text.replace(" ", "")
         time.sleep(random.uniform(1,2))
         title_temp.click()
-        time.sleep(random.uniform(0,1))
+        time.sleep(random.uniform(1,2))
         
         item_adult = False
         date_finish_temp = driver.find_elements(By.XPATH, "//div[@class='mx-20 -mt-2']/div[1]/*") # div가 
@@ -86,10 +84,10 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
 
 # def multip(shared_dict, url_list, genre_list, cookie_list):
 def multip(shared_dict, url_list, genre_list):
-    pool = Pool(len(genre_list)) #len(genre_list)
+    pool = Pool(3) #len(genre_list)
     for i in range(len(genre_list)):  #len(genre_list)
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list, genre_list[i], i))
-        # pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list, genre_list[i], cookie_list, i))
+        time.sleep(random.uniform(1,3))
     pool.close()
     pool.join()   
 
@@ -98,14 +96,12 @@ if __name__ == '__main__':
     file = open(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "horror/thriller", "comic/daily"] # 사이트별 설정 
     base_url = "https://webtoon.kakao.com/ranking"
-    # url_list=[]
-    # for u in genre_list:
-    #     url_list.append(base_url)
     
-    # get login session cookie
+    #### manually ### 
+    #### get login session cookie ####
     # driver = driver_set()
-    # get_url_untill_done(driver, """)
-    # time.sleep(40) # time for login
+    # get_url_untill_done(driver, "https://webtoon.kakao.com/")
+    # time.sleep(50) # time for login
     # cookie_list = driver.get_cookies()
     # pickle.dump(cookie_list, open("kakao_cookies.pkl","wb"))    
     # driver.close()
@@ -114,15 +110,7 @@ if __name__ == '__main__':
     manager = Manager()
     shared_dict = manager.dict()
     multip(shared_dict, base_url, genre_list)
-    
-    
-    # find date and finish_status from weekday page
-    
-    driver = driver_set
-    
-    
-    
-    
-    json.dump(shared_dict.copy(), file, separators=(',', ':'))
+    shared_dict_copy = shared_dict.copy()
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
     print("time :", time.time() - start)    
     file.close()

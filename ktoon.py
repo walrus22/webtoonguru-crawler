@@ -50,7 +50,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         get_url_untill_done(driver, item_address)
         item_rank += 1
-        item_id = item_address[item_address.rfind("=")+1:]
+        item_id = item_address[item_address.rfind("=")+1:] + "_" + genre_tag
         
         item_thumbnail = driver.find_element(By.XPATH, "//span[@class='thmb']/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//h3[@class='hc']").text
@@ -77,7 +77,6 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         #     item_adult = False
         # else:
         #     item_adult = True
-        
         webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
@@ -126,7 +125,8 @@ if __name__ == '__main__':
     manager = Manager()
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_name, cookie_list) # choose one
-    json.dump(shared_dict.copy(), file, separators=(',', ':'))
+    shared_dict_copy = shared_dict.copy()    
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
     print("time :", time.time() - start)    
     file.close()
     

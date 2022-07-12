@@ -4,7 +4,7 @@ import random
 from PIL import Image
 from urllib.request import urlopen
 from selenium import webdriver
-
+from multiprocessing import Pool, Manager
 
 from collector_setting import *
 import json
@@ -78,12 +78,18 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 ################################################################################
 
 
-driver = driver_set()
-url = "https://onestory.co.kr/display/rank/webtoon/DP26002?title=%EC%9B%B9%ED%88%B0%20%EB%9E%AD%ED%82%B9"
-get_url_untill_done(driver, url)
+# driver = driver_set()
+# url = "https://www.toomics.com/webtoon/top100/genre/8"
+# get_url_untill_done(driver, url)
 
-# driver.find_elements(By.XPATH, "//div[@class='ListItem']")[1].click()
-print(driver.find_elements(By.XPATH, "//a[@class='ItemRendererLink ranking']")[0].get_attribute("href"))
+# click_temp = driver.find_element(By.XPATH,"//li[@class='mode1'] | //li[@class='mode1 active']")
+# click_temp.click()
+# time.sleep(30)
 
 
-time.sleep(30)
+if __name__ == '__main__':
+    manager = Manager()
+    shared_dict = manager.dict()
+    shared_dict['1'] = ['3','4','5']
+    shared_dict['2'] = ['6','4','5']
+    print('2' in shared_dict)
