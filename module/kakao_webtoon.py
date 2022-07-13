@@ -5,9 +5,34 @@ from urllib.request import urlopen
 from PIL import Image
 from multiprocessing import Pool, Manager
 import pickle
+from selenium.common.exceptions import WebDriverException
+
 
 
 ################################# function setting ############################
+# https://stackoverflow.com/questions/47274852/mouse-scroll-wheel-with-selenium-webdriver-on-element-without-scrollbar/47287595#47287595
+def wheel_element(element, deltaY = 120, offsetX = 0, offsetY = 0):
+  error = element._parent.execute_script("""
+    var element = arguments[0];
+    var deltaY = arguments[1];
+    var box = element.getBoundingClientRect();
+    var clientX = box.left + (arguments[2] || box.width / 2);
+    var clientY = box.top + (arguments[3] || box.height / 2);
+    var target = element.ownerDocument.elementFromPoint(clientX, clientY);
+
+    for (var e = target; e; e = e.parentElement) {
+      if (e === element) {
+        target.dispatchEvent(new MouseEvent('mouseover', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
+        target.dispatchEvent(new MouseEvent('mousemove', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
+        target.dispatchEvent(new WheelEvent('wheel',     {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY, deltaY: deltaY}));
+        return;
+      }
+    }    
+    return "Element is not interactable";
+    """, element, deltaY, offsetX, offsetY)
+  if error:
+    raise WebDriverException(error)
+
 def collect_webtoon_data(shared_dict, url, genre_tag, counter):
 # def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list, counter):
     webtoon_elements_url = []
@@ -15,7 +40,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
     # login with cookie
     driver = driver_set()
     get_url_untill_done(driver, "https://webtoon.kakao.com/")
-    cookie_list = pickle.load(open("kakao_cookies_imac.pkl", "rb"))
+    cookie_list = pickle.load(open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)), "rb"))
     for cookie in cookie_list:
         driver.add_cookie(cookie)
     get_url_untill_done(driver, url)   
@@ -56,20 +81,28 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
         
+        # get element and mouse wheel down
+        elm = driver.find_element(By.XPATH, "//main[@class='h-full pt-0']")
+        wheel_element(elm, 120)
+        time.sleep(1)
         
+        # click detail button
+        driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word s14-medium-white !whitespace-nowrap']").click()
+        time.sleep(1)
         
-        driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
-        time.sleep(random.uniform(1,2))
-        
+        # get detail info
         item_title = driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word mt-8 s22-semibold-white']").text
         item_artist_list = driver.find_elements(By.XPATH, "//div[@class='flex mb-7']")
         item_artist_list.pop()
         item_artist = ""
         for i in range(len(item_artist_list)):
+            item_artist_temp = item_artist_list[i].find_element(By.XPATH, "./dd").text
             if i == 0:
-                item_artist += item_artist_list[i].find_element(By.XPATH, "./dd").text
+                item_artist += item_artist_temp
             else:
-                item_artist += "," + item_artist_list[i].find_element(By.XPATH, "./dd").text     
+                if item_artist.find(item_artist_temp) != -1: # prevent duplicate
+                    continue
+                item_artist += "," + item_artist_temp
         
         item_adult = False
         date_finish_temp = driver.find_elements(By.XPATH, "//div[@class='mx-20 -mt-2']/div[1]/*") # div가 
@@ -90,10 +123,11 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
 def multip(shared_dict, url_list, genre_list):
     pool = Pool(1) # kakao 멀티프로세싱 x
     for i in range(len(genre_list)):  #len(genre_list)
-        time.sleep(30)
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list, genre_list[i], i))
     pool.close()
     pool.join()   
+    
+################# 
 
 if __name__ == '__main__':
     start = time.time()
@@ -107,7 +141,7 @@ if __name__ == '__main__':
     # get_url_untill_done(driver, "https://webtoon.kakao.com/")
     # time.sleep(50) # time for login
     # cookie_list = driver.get_cookies()
-    # pickle.dump(cookie_list, open("kakao_cookies.pkl","wb"))    
+    # pickle.dump(cookie_list, open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)),"wb"))    
     # driver.close()
 
     # multi-processing
@@ -116,5 +150,5 @@ if __name__ == '__main__':
     multip(shared_dict, base_url, genre_list)
     shared_dict_copy = shared_dict.copy()
     json.dump(shared_dict_copy, file, separators=(',', ':'))
-    print("time :", time.time() - start)    
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)
     file.close()

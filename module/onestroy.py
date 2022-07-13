@@ -98,6 +98,6 @@ if __name__ == '__main__':
     multip_cookie(shared_dict, url_list, genre_name, cookie_list) # choose one
     shared_dict_copy = shared_dict.copy()
     json.dump(shared_dict_copy, file, separators=(',', ':'))
-    print("time :", time.time() - start)    
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)
     file.close()
     

@@ -79,9 +79,40 @@ def get_element_data(driver, webtoon_elements, genre_tag):
 
 
 
+# driver = driver_set()
+# url = "https://webtoon.kakao.com/content/%ED%99%94%ED%8F%90%EA%B0%9C%ED%98%81/1877"
+# get_url_untill_done(driver, url)
+
+
+# https://stackoverflow.com/questions/47274852/mouse-scroll-wheel-with-selenium-webdriver-on-element-without-scrollbar/47287595#47287595
+def wheel_element(element, deltaY = 120, offsetX = 0, offsetY = 0):
+  error = element._parent.execute_script("""
+    var element = arguments[0];
+    var deltaY = arguments[1];
+    var box = element.getBoundingClientRect();
+    var clientX = box.left + (arguments[2] || box.width / 2);
+    var clientY = box.top + (arguments[3] || box.height / 2);
+    var target = element.ownerDocument.elementFromPoint(clientX, clientY);
+
+    for (var e = target; e; e = e.parentElement) {
+      if (e === element) {
+        target.dispatchEvent(new MouseEvent('mouseover', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
+        target.dispatchEvent(new MouseEvent('mousemove', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
+        target.dispatchEvent(new WheelEvent('wheel',     {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY, deltaY: deltaY}));
+        return;
+      }
+    }    
+    return "Element is not interactable";
+    """, element, deltaY, offsetX, offsetY)
+  if error:
+    raise error
+
 driver = driver_set()
-url = "https://webtoon.kakao.com/content/%ED%99%94%ED%8F%90%EA%B0%9C%ED%98%81/1877"
-get_url_untill_done(driver, url)
+get_url_untill_done(driver, "https://webtoon.kakao.com/content/%EC%95%84%EB%B9%84%EB%AC%B4%EC%8C%8D/1395", 5, 7)
+
+item_artist = driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word overflow-hidden text-ellipsis !whitespace-nowrap s12-regular-white -mt-3 opacity-85 leading-21 h-21 pr-45']").text
+
+
 fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
 if fore_temp.tag_name == "video":
     foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
@@ -93,16 +124,36 @@ img = background.crop((0,0,750,750))
 img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))) 
 item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format("test"))
 item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
-# driver.find_element(By.XPATH, "//div[@class='overflow-hidden cursor-pointer']").click()
-
-
-driver.execute_script("window.scrollBy(0,500)")
 
 
 
-time.sleep(5)
-# click_temp = driver.find_element(By.XPATH,"//li[@class='mode1'] | //li[@class='mode1 active']")
-# click_temp.click()
-# time.sleep(30)
+# get element and mouse wheel down
+elm = driver.find_element(By.XPATH, "//main[@class='h-full pt-0']")
+wheel_element(elm, 120)
+time.sleep(1)
+# click detail button
+driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word s14-medium-white !whitespace-nowrap']").click()
+time.sleep(1)
 
+item_title = driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word mt-8 s22-semibold-white']").text
+# item_artist_list = driver.find_elements(By.XPATH, "//div[@class='flex mb-7']")
+# item_artist_list.pop()
+# item_artist = ""
+# for i in range(len(item_artist_list)):
+#     if i == 0:
+#         item_artist += item_artist_list[i].find_element(By.XPATH, "./dd").text
+#     else:
+#         item_artist += "," + item_artist_list[i].find_element(By.XPATH, "./dd").text     
 
+item_adult = False
+date_finish_temp = driver.find_elements(By.XPATH, "//div[@class='mx-20 -mt-2']/div[1]/*") # div가 
+data_string = ""
+for date_element in date_finish_temp:
+    if date_element.get_attribute("alt") == "성인":
+        item_adult = True
+    else:
+        data_string += date_element.text
+item_date, item_finish_status = find_date(data_string, "완결", False)
+driver.close()
+
+print(item_synopsis)

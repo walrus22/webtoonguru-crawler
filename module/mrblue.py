@@ -92,7 +92,7 @@ if __name__ == '__main__':
     json.dump(shared_dict.copy(), file, separators=(',', ':'))
     
     # json.dump(shared_dict, file, separators=(',', ':'))
-    print("time :", time.time() - start)    
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)
     file.close()
 
     

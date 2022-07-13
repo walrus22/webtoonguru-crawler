@@ -11,7 +11,8 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag):
     # login with cookie
     driver = driver_set()
     get_url_untill_done(driver, "https://page.kakao.com/main")
-    cookie_list = pickle.load(open("kakao_page_cookies.pkl", "rb"))
+    # cookie_list = pickle.load(open("kakao_page_cookies.pkl", "rb"))
+    cookie_list = pickle.load(open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)), "rb"))
     for cookie in cookie_list:
         driver.add_cookie(cookie)
     get_url_untill_done(driver, url)   
@@ -25,7 +26,6 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.get_attribute("href"))
     driver.implicitly_wait(30)
-    print(len(webtoon_elements_url))
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
     return shared_dict  
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     # get_url_untill_done(driver, "https://page.kakao.com/main")
     # time.sleep(50) # time for login
     # cookie_list = driver.get_cookies()
-    # pickle.dump(cookie_list, open("kakao_page_cookies.pkl","wb"))    
+    # pickle.dump(cookie_list, open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)),"wb"))     
     # driver.close()
     
     # main
@@ -87,6 +87,6 @@ if __name__ == '__main__':
     multip_cookie(shared_dict, url_list, genre_name)
     shared_dict_copy = shared_dict.copy()
     json.dump(shared_dict_copy, file, separators=(',', ':'))
-    print("time :", time.time() - start)    
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)
     file.close()
     

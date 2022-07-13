@@ -15,9 +15,11 @@ def driver_set():
     options = Options()
     # options.add_argument("--incognito")
     options.add_argument("--window-size=1920,1080") # for chrome
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_argument("--disable-gpu")    
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-extensions")
     # options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
@@ -34,13 +36,12 @@ def driver_set():
     
     driver.set_window_position(2560, 0) # for imac dual monior
     # driver.set_window_position(3520, 0) # for imac dual monior
-
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(300)
     return driver
 
-def get_url_untill_done(driver_var, url, random_min=3, random_max=5):
+def get_url_untill_done(driver_var, url, random_min=4, random_max=7):
     count = 1
-    for i in range(1, 6): # limit trying
+    for i in range(1, 10): # limit trying
         try:
             # 시간 바꾸지마라.. 밴당해 디도스로
             time.sleep(random.uniform(random_min,random_max)) # prevent to restrict
@@ -49,10 +50,10 @@ def get_url_untill_done(driver_var, url, random_min=3, random_max=5):
             print(url + " << " + str(count) + " time try, success!") #, end=""
             break
         except Exception as e:
-            # driver_var.implicitly_wait(5)
+            driver_var.implicitly_wait(30)
             # print(str(e) + " << " + url + " << " + str(count) + " time try, failed!")
             print(url + " << " + str(count) + " time try, failed.")
-            # time.sleep(3) # without headless
+            time.sleep(15) # without headless
             count+=1
             if i == 5:
                 raise
@@ -90,7 +91,7 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     driver.find_element(By.XPATH, pw_tag).send_keys(user_pw)
     time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
-    time.sleep(random.uniform(2,3))
+    time.sleep(random.uniform(5,7))
 
 def is_adult(item_adult_string, key_word):
     if item_adult_string.find(key_word) != -1: # adult
