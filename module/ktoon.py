@@ -42,7 +42,7 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
     return shared_dict
             
     
-def get_element_data(driver, webtoon_elements_url, genre_tag):
+def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
     
@@ -50,7 +50,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         get_url_untill_done(driver, item_address)
         item_rank += 1
-        item_id = item_address[item_address.rfind("=")+1:] + "_" + genre_tag
+        item_id = item_address[item_address.rfind("=")+1:] + "_" + item_genre
         
         item_thumbnail = driver.find_element(By.XPATH, "//span[@class='thmb']/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//h3[@class='hc']").text
@@ -77,12 +77,12 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         #     item_adult = False
         # else:
         #     item_adult = True
-        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, item_title, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(1) 
+    pool = Pool(2) 
     for i in range(len(url_list)):  #len(url_list)
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
     pool.close()
@@ -91,7 +91,10 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    table_name = Path(__file__).stem + now
+    
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
     base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"
@@ -126,8 +129,17 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_name, cookie_list) # choose one
     shared_dict_copy = shared_dict.copy()    
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    
+    # store data in mysql db
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
     print("{} >> ".format(Path(__file__).stem), time.time() - start)   
-    file.close()
+    
+    # json.dump(shared_dict_copy, file, separators=(',', ':'))
+    # file.close()
+    
     
     #time : 911.9026701450348

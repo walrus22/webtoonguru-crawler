@@ -10,6 +10,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
+import mysql.connector
+import datetime
 
 def driver_set():
     options = Options()
@@ -39,11 +41,12 @@ def driver_set():
     driver.implicitly_wait(300)
     return driver
 
-def get_url_untill_done(driver_var, url, random_min=4, random_max=7):
+def get_url_untill_done(driver_var, url, random_min=1, random_max=3):
     count = 1
     for i in range(1, 10): # limit trying
         try:
             # 시간 바꾸지마라.. 밴당해 디도스로
+            driver_var.implicitly_wait(30)
             time.sleep(random.uniform(random_min,random_max)) # prevent to restrict
             driver_var.get(url)
             time.sleep(random.uniform(random_min,random_max))
@@ -98,9 +101,37 @@ def is_adult(item_adult_string, key_word):
         return True
     else:
         return False
-    
+
+
+class mysql_db:
+    def __init__(self, db_name):
+        self.db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="Zmfhffldxptmxm123!@#",
+        database=db_name
+        )
+        self.cursor = self.db.cursor()
         
-    
+    def create_table(self, table_name):
+        self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address VARCHAR(255), item_rank int, item_thumbnail VARCHAR(255), item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis VARCHAR(255), item_artist VARCHAR(255), item_adult boolean)".format(table_name))
+        
+    def insert_to_mysql(self, list_element, table_name):
+        str_temp=""
+        first = True
+        for i in list_element:
+            if first == True:
+                str_temp += '\'{}\''.format(i)
+                first = False
+            elif type(i) != str:
+                str_temp += ',{}'.format(i)
+            else: 
+                str_temp += ',\'{}\''.format(i)
+
+        self.cursor.execute("INSERT INTO {table} (item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
+        
+        print(self.cursor.rowcount, "record inserted")
+
 """
 파이썬 웹툰데이타 클래스를 만들까? 만들어서 instance 로 id, title.. 저장하는게 더 빠르거나 깔끔하려나? 
 getId 같은 함수만들어서 해도되고.. 지금은 리스트의 순서에 의존해서 구분하고 있으니까 클래스만드는게 깔끔할듯하다

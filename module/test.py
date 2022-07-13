@@ -2,6 +2,8 @@ from collector_setting import *
 import json
 from pathlib import Path
 from multiprocessing import Pool, Manager
+import mysql.connector
+import datetime
 
 def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
     # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
@@ -9,12 +11,12 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
 
     # login with cookie 
     driver = driver_set()
-    get_url_untill_done(driver, "https://onestory.co.kr/member/login?redirectUri=%2F")
-    for cookie in cookie_list:
-        driver.add_cookie(cookie)
+    # get_url_untill_done(driver, "https://onestory.co.kr/member/login?redirectUri=%2F")
+    # for cookie in cookie_list:
+    #     driver.add_cookie(cookie)
     
     # click item
-    for i in range(30):
+    for i in range(2):
         get_url_untill_done(driver, url)
         webtoon_elements = driver.find_elements(By.XPATH, "//div[@class='ListItem']")
         driver.implicitly_wait(0.3)
@@ -64,51 +66,37 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
         time.sleep(random.uniform(0.7,1.5))
     pool.close()
     pool.join()     
+    
+
+
 
 ###########################################################################
 if __name__ == '__main__':
-    start = time.time()
-    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
-    table_name = Path(__file__).stem + now
-    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    # genre_list = ["26007"] 
-    # genre_name = ["daily"] # 성인을 맨뒤로 놔서, 중복있는 경우 adult=true
-    genre_list = ["26002", "26009", "26003", "26006", "26005", "26007", "26001", "26004","26011"] 
-    genre_name = ["romance", "bl", "drama", "action", "fantasy", "daily", "gag", "thrill","adult"] 
-    base_url = "https://onestory.co.kr/display/rank/webtoon/DP{}?title=%EC%9B%B9%ED%88%B0%20%EB%9E%AD%ED%82%B9"
-    url_list=[]
-    for u in genre_list:
-        url_list.append(base_url.format(u))
-        
+       
     # get login cookies
     driver = driver_set()
-    get_url_untill_done(driver, "https://onestory.co.kr/member/login?redirectUri=%2F")
-    driver.find_element(By.XPATH, "//div[@class='MemberLoginListItem facebook']/a").click()
-    time.sleep(3)
-    user_id = "tpa74231@gmail.com"
-    user_pw = "Fortest111!!!"
-    id_tag = "//input[@id='email']"
-    pw_tag = "//input[@id='pass']"
-    login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
-    cookie_list = driver.get_cookies()
-    driver.close()
-    driver.quit()
     
-    # main
-    manager = Manager()
-    shared_dict = manager.dict()
-    multip_cookie(shared_dict, url_list, genre_name, cookie_list) # choose one
-    shared_dict_copy = shared_dict.copy()
+    url = "https://www.bomtoon.com/comic/ep_list/100CleanUp/?p_id=tw1590"
     
-    # store data in mysql db
-    mydb = mysql_db("webtoon_db"+ now)
-    mydb.create_table(table_name)
-    for dict_value in shared_dict_copy.values():
-        mydb.insert_to_mysql(dict_value, table_name)
-    mydb.db.commit()
+    get_url_untill_done(driver, url)
+    text1 = driver.find_element(By.ID, "comic_desc").text
+    print(driver.find_element(By.ID, "comic_desc").text)
     
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)
+    text2 = "향수를 뿌리는 시간까지 정해져있을 정도로 철저한 '우인'의 남자친구 '강석연'! 그런 그를 사랑했지만 언제나 자신보다 일정을 먼저 생각한 석연에게 결국 실망해 둘은 헤어지고.. 새로운 마음으로 취직한 클리닝 업체에서 받은 첫 일은..헤어진 석연의 엉망진창 집 치우기!?"
     
-    # json.dump(shared_dict_copy, file, separators=(',', ':'))
-    # file.close()
+    text2.replace()
     
+    text1.replace("'", "''")
+    
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="Zmfhffldxptmxm123!@#",
+        database="mydatabase"
+    )
+    
+    mycursor = mydb.cursor()
+    
+    mycursor.execute("INSERT INTO bom (synop) VALUES ({})".format(text1))
+    
+    mydb.commit()

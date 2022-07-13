@@ -30,7 +30,7 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag):
     driver.close()
     return shared_dict  
     
-def get_element_data(driver, webtoon_elements_url, genre_tag):
+def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
     
@@ -50,7 +50,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='jsx-3755015728 descriptionBox descriptionBox_pc  lineHeight']").text
         item_adult = False # 카카오 페이지는 성인물 없나봄
         
-        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, item_title, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
@@ -64,7 +64,10 @@ def multip_cookie(shared_dict, url_list, genre_name):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    table_name = Path(__file__).stem + now
+    
     genre_list = ["115", "116", "121", "69", "112", "119"] 
     genre_name = ["fantasy", "drama", "romance", "romance+fantasy", "historical", "bl"]  # 소년 = fantasy
     
@@ -73,7 +76,8 @@ if __name__ == '__main__':
     for u in genre_list:
         url_list.append(base_url.format(u))
         
-    # get login session cookie
+    ### MANUALLY
+    ### get login session cookie 
     # driver = driver_set()
     # get_url_untill_done(driver, "https://page.kakao.com/main")
     # time.sleep(50) # time for login
@@ -86,7 +90,13 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_name)
     shared_dict_copy = shared_dict.copy()
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    # json.dump(shared_dict_copy, file, separators=(',', ':'))
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
+    
     print("{} >> ".format(Path(__file__).stem), time.time() - start)
-    file.close()
+    # file.close()
     

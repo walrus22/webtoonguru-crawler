@@ -60,7 +60,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
     return shared_dict
 
     
-def get_element_data(driver, webtoon_elements_url, genre_tag):
+def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
     
@@ -115,7 +115,7 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         item_date, item_finish_status = find_date(data_string, "완결", False)
         
         # item_etc_status = driver.find_element(By.XPATH, "")
-        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, 
                                       item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
@@ -131,7 +131,9 @@ def multip(shared_dict, url_list, genre_list):
 
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    table_name = Path(__file__).stem + now
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "horror/thriller", "comic/daily"] # 사이트별 설정 
     base_url = "https://webtoon.kakao.com/ranking"
     
@@ -149,6 +151,12 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     multip(shared_dict, base_url, genre_list)
     shared_dict_copy = shared_dict.copy()
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    # json.dump(shared_dict_copy, file, separators=(',', ':'))
+    # file.close()
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
+    
     print("{} >> ".format(Path(__file__).stem), time.time() - start)
-    file.close()

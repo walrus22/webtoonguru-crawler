@@ -40,7 +40,7 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_
     driver.close()
     return shared_dict
     
-def get_element_data(driver, webtoon_elements_url, genre_name):
+def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
     
@@ -59,7 +59,7 @@ def get_element_data(driver, webtoon_elements_url, genre_name):
         item_synopsis = driver.find_element(By.CSS_SELECTOR, "#comic_desc").text
         item_artist = driver.find_element(By.CLASS_NAME, "author").text.replace("&",",") # & -> ,
         item_adult = item_address[1]
-        webtoon_data_dict[item_id] = [item_id, genre_name, item_address[0], item_rank, item_thumbnail, item_title, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address[0], item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
@@ -72,7 +72,10 @@ def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    table_name = Path(__file__).stem + now
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    
     genre_list = [4, 3] # 사이트별 설정 
     genre_name = ["bl", "romance"] 
     base_url = "https://www.bomtoon.com/main/rank"
@@ -102,8 +105,16 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list)
     shared_dict_copy = shared_dict.copy()
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    # json.dump(shared_dict_copy, file, separators=(',', ':'))
+    
+    # store data in mysql db
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
+    
     print("{} >> ".format(Path(__file__).stem), time.time() - start)
-    file.close()
+    # file.close()
     
 

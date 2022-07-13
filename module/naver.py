@@ -21,7 +21,7 @@ def collect_webtoon_data_without_cookie(shared_dict, url, genre_tag):
     return shared_dict
         
     
-def get_element_data(driver, webtoon_elements_url, genre_tag):
+def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
     
@@ -51,12 +51,12 @@ def get_element_data(driver, webtoon_elements_url, genre_tag):
         item_date = "완결"
         item_finish_status = "완결"
         
-        webtoon_data_dict[item_id] = [item_id, genre_tag, item_address, item_rank, item_thumbnail, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, 
                                       item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_without_cookie(shared_dict, url_list, genre_list):
-    pool = Pool(1) 
+    pool = Pool(2) 
     for i in range(len(url_list)):   #len(url_list)
         pool.apply_async(collect_webtoon_data_without_cookie, args =(shared_dict, url_list[i], genre_list[i]))
     pool.close()
@@ -65,8 +65,9 @@ def multip_without_cookie(shared_dict, url_list, genre_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    print(os.path.join(os.getcwd(), "json", "{}.json".format(Path(__file__).stem)))
+    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    table_name = Path(__file__).stem + now
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     # genre_list = ["historical", "sports"]
     genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
     base_url = "https://comic.naver.com/webtoon/genre?genre={}"
@@ -114,9 +115,13 @@ if __name__ == '__main__':
                 shared_dict_copy[id_temp][6] += "," 
                 shared_dict_copy[id_temp][6] += day_temp 
     
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)
-    file.close()
-    
+    # json.dump(shared_dict_copy, file, separators=(',', ':'))
+    # file.close()
 
-   
+    # store data in mysql db
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
