@@ -35,30 +35,32 @@ def driver_set():
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
     # mac: sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
     # http://localhost:9222/ 접속되는지 확인
-    
-    driver.set_window_position(2560, 0) # for imac dual monior
+    # print("#################################")
+    # print(Path(__file__).stem)
+    # print("#################################")
+    # driver.set_window_position(2560, 0) # for imac dual monior
     # driver.set_window_position(3520, 0) # for imac dual monior
     driver.implicitly_wait(300)
     return driver
 
-def get_url_untill_done(driver_var, url, random_min=1, random_max=3):
+def get_url_untill_done(driver_var, url, random_min=1, random_max=2):
     count = 1
     for i in range(1, 10): # limit trying
         try:
             # 시간 바꾸지마라.. 밴당해 디도스로
-            driver_var.implicitly_wait(30)
-            time.sleep(random.uniform(random_min,random_max)) # prevent to restrict
+            # driver_var.implicitly_wait(30)
+            # time.sleep(random.uniform(random_min,random_max)) # prevent to restrict
             driver_var.get(url)
             time.sleep(random.uniform(random_min,random_max))
             print(url + " << " + str(count) + " time try, success!") #, end=""
             break
         except Exception as e:
-            driver_var.implicitly_wait(30)
+            # driver_var.implicitly_wait(30)
             # print(str(e) + " << " + url + " << " + str(count) + " time try, failed!")
             print(url + " << " + str(count) + " time try, failed.")
-            time.sleep(15) # without headless
+            time.sleep(10) # without headless
             count+=1
-            if i == 5:
+            if i == 10:
                 raise
             continue     
 
@@ -114,7 +116,8 @@ class mysql_db:
         self.cursor = self.db.cursor()
         
     def create_table(self, table_name):
-        self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address VARCHAR(255), item_rank int, item_thumbnail VARCHAR(255), item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis VARCHAR(255), item_artist VARCHAR(255), item_adult boolean)".format(table_name))
+        self.cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
+        self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address LONGTEXT, item_rank VARCHAR(255), item_thumbnail LONGTEXT, item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis LONGTEXT, item_artist VARCHAR(255), item_adult boolean)".format(table_name))
         
     def insert_to_mysql(self, list_element, table_name):
         str_temp=""
@@ -130,7 +133,7 @@ class mysql_db:
 
         self.cursor.execute("INSERT INTO {table} (item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
         
-        print(self.cursor.rowcount, "record inserted")
+        # print(self.cursor.rowcount, "record inserted")
 
 """
 파이썬 웹툰데이타 클래스를 만들까? 만들어서 instance 로 id, title.. 저장하는게 더 빠르거나 깔끔하려나? 

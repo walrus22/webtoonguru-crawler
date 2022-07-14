@@ -37,10 +37,19 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
+    ### 7.14 avoid duplicate
+    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
+    for i in list(webtoon_data_dict_temp):
+        if i in shared_dict.keys():
+            shared_temp = shared_dict[i]
+            shared_temp[1] += "," + webtoon_data_dict_temp[i][1] # genre
+            shared_temp[3] += "," + webtoon_data_dict_temp[i][3] # genre
+            shared_dict[i] = shared_temp
+            webtoon_data_dict_temp.pop(i)    
+    shared_dict.update(webtoon_data_dict_temp)
     driver.close()
-    return shared_dict
-            
+    return 
+           
     
 def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
@@ -50,7 +59,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         get_url_untill_done(driver, item_address)
         item_rank += 1
-        item_id = item_address[item_address.rfind("=")+1:] + "_" + item_genre
+        item_id = item_address[item_address.rfind("=")+1:]
+        # item_id = item_address[item_address.rfind("=")+1:] + "_" + item_genre
         
         item_thumbnail = driver.find_element(By.XPATH, "//span[@class='thmb']/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//h3[@class='hc']").text
@@ -77,12 +87,16 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         #     item_adult = False
         # else:
         #     item_adult = True
-        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
+        
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, str(item_rank), item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(2) 
+    pool = Pool(len(url_list)) 
     for i in range(len(url_list)):  #len(url_list)
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
     pool.close()
@@ -94,9 +108,13 @@ if __name__ == '__main__':
     # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')
     table_name = Path(__file__).stem + now
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
     
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
+    # genre_list = ["5", "1"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
+    # genre_name = ["drama", "daily"]
     base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"
     url_list=[]
     for u in genre_list:
@@ -115,8 +133,9 @@ if __name__ == '__main__':
     driver.find_element(By.XPATH, "//label[@class='check_changetext']").click()
     # headless 모드에서 Element is not clickable at point 발생하면 윈도우 사이즈를 설정해주면 됨.
     
-    time.sleep(3)
+    
     # 2. 로그인 버튼 클릭
+    time.sleep(3)
     driver.find_element(By.XPATH, "//a[@class='btn_submit loginPrcBtn']").click()    
     
     login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
@@ -131,8 +150,6 @@ if __name__ == '__main__':
     shared_dict_copy = shared_dict.copy()    
     
     # store data in mysql db
-    mydb = mysql_db("webtoon_db"+ now)
-    mydb.create_table(table_name)
     for dict_value in shared_dict_copy.values():
         mydb.insert_to_mysql(dict_value, table_name)
     mydb.db.commit()
@@ -141,5 +158,3 @@ if __name__ == '__main__':
     # json.dump(shared_dict_copy, file, separators=(',', ':'))
     # file.close()
     
-    
-    #time : 911.9026701450348

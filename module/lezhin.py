@@ -65,6 +65,10 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
                 item_synopsis = item_synopsis_list[i].text
             else:
                 item_synopsis += "\n" + item_synopsis_list[i].text    
+                
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
 
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, 
                                       item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]

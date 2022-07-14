@@ -56,6 +56,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
         webtoon_elements_url.append(elements.get_attribute("href"))
     webtoon_elements_url.insert(0, driver.find_element(By.XPATH, "//a[@class='relative w-full h-full opacity-0 z-2 animate-fadeIn']").get_attribute("href"))
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
+    
     driver.close()
     return shared_dict
 
@@ -68,7 +69,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         item_id = item_address[item_address.rfind("/")+1:]
         item_rank += 1
-        get_url_untill_done(driver, item_address) # s
+        get_url_untill_done(driver, item_address, 2, 3 ) # s
         fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
         if fore_temp.tag_name == "video":
             foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
@@ -113,6 +114,10 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
             else:
                 data_string += date_element.text
         item_date, item_finish_status = find_date(data_string, "완결", False)
+        
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
         
         # item_etc_status = driver.find_element(By.XPATH, "")
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, 

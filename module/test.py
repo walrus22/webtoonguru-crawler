@@ -74,29 +74,38 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
 if __name__ == '__main__':
        
     # get login cookies
-    driver = driver_set()
+    # driver = driver_set()
     
-    url = "https://www.bomtoon.com/comic/ep_list/100CleanUp/?p_id=tw1590"
+    # url = "https://www.bomtoon.com/comic/ep_list/100CleanUp/?p_id=tw1590"
     
-    get_url_untill_done(driver, url)
-    text1 = driver.find_element(By.ID, "comic_desc").text
-    print(driver.find_element(By.ID, "comic_desc").text)
+    # get_url_untill_done(driver, url)
+    # # item_synopsis = driver.find_element(By.ID, "comic_desc").text
+    # print(driver.find_element(By.ID, "comic_desc").text)
+    dict_temp = {}
+    dict_temp1 = {'1' : ['1', 'romance', 'hi', '1'],
+                  '2' : ['2', 'bl', 'hlee', '5']}
+    dict_temp2 = {'2' : ['2', 'romance', 'hleo', '4'], 
+                  '3' : ['3', 'gl', 'sd', '6'], }
+    # for i in dict_temp.keys():
+    #     if 
     
-    text2 = "향수를 뿌리는 시간까지 정해져있을 정도로 철저한 '우인'의 남자친구 '강석연'! 그런 그를 사랑했지만 언제나 자신보다 일정을 먼저 생각한 석연에게 결국 실망해 둘은 헤어지고.. 새로운 마음으로 취직한 클리닝 업체에서 받은 첫 일은..헤어진 석연의 엉망진창 집 치우기!?"
+    print(1 in dict_temp)
+    print(1 in dict_temp1)
     
-    text2.replace()
     
-    text1.replace("'", "''")
+    # webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
     
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Zmfhffldxptmxm123!@#",
-        database="mydatabase"
-    )
     
-    mycursor = mydb.cursor()
+    for i in list(dict_temp2):
+        if i in dict_temp1.keys():
+            dict_temp1[i][1] += "," + dict_temp2[i][1]
+            dict_temp1[i][3] += "," + dict_temp2[i][3]
+            dict_temp2.pop(i, None)
+    dict_temp1.update(dict_temp2)        
     
-    mycursor.execute("INSERT INTO bom (synop) VALUES ({})".format(text1))
-    
-    mydb.commit()
+    print(type(str(3)))
+            
+    print(dict_temp1)
+    print(dict_temp2)
+            
+            

@@ -8,8 +8,9 @@ from pathlib import Path
 
 if __name__ == '__main__':
     start = time.time()
-    tasks = ['bomtoon.py', 'kakao_page.py', 'kakao_webtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py']
-    # tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py']
+    tasks = ['bomtoon.py', 'ktoon.py']
+    # tasks = ['kakao_webtoon.py', 'bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py']
+    # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py', 'kakao_webtoon.py']
     
     # create mysql DB
     # 이거 숨겨야겠는데..
@@ -17,9 +18,9 @@ if __name__ == '__main__':
         host="localhost",
         user="root",
         password="Zmfhffldxptmxm123!@#"
-        datab
     )
     db_cursor = webtoon_db.cursor()
+    db_cursor.execute("DROP DATABASE IF EXISTS {}".format("webtoon_db"+ datetime.datetime.now().strftime('_%Y%m%d_%H')))
     db_cursor.execute("CREATE DATABASE {}".format("webtoon_db"+ datetime.datetime.now().strftime('_%Y%m%d_%H')))    
     
     process_list = []
@@ -29,3 +30,7 @@ if __name__ == '__main__':
         time.sleep(0.5)
         p.wait()
     print("total process time >> ", time.time() - start)  
+
+
+
+    

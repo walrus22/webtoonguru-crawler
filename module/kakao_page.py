@@ -11,7 +11,6 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag):
     # login with cookie
     driver = driver_set()
     get_url_untill_done(driver, "https://page.kakao.com/main")
-    # cookie_list = pickle.load(open("kakao_page_cookies.pkl", "rb"))
     cookie_list = pickle.load(open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)), "rb"))
     for cookie in cookie_list:
         driver.add_cookie(cookie)
@@ -49,6 +48,10 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         time.sleep(0.5)
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='jsx-3755015728 descriptionBox descriptionBox_pc  lineHeight']").text
         item_adult = False # 카카오 페이지는 성인물 없나봄
+        
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
         
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]

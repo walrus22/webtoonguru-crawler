@@ -53,12 +53,16 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
                 item_artist += ","
             item_artist += author
         
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
+        
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                     item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(1) #
+    pool = Pool(2) #
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
         # pool.map(collect_webtoon_data, args = {url_list[i], genre_list[i], ".img"})
@@ -71,7 +75,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')
     table_name = Path(__file__).stem + now
     # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    genre_list = ["romance", "bl", "drama", "gl", "action", "fantasy", "thriller"] # 성인있음 erotic
+    genre_list = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thriller"] 
     url_list=[]
     base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
     for u in genre_list:

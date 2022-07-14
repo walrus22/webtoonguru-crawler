@@ -32,11 +32,16 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_
         else: 
             item_adult = True
         webtoon_elements_url.append([element.find_element(By.XPATH, "./a").get_attribute("href"), item_adult])
-    
-    webtoon_elements_url = webtoon_elements_url[:4]
-    
     driver.implicitly_wait(30)
-    shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_name))
+    
+    ### 7.14 avoid duplicate
+    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_name)
+    for i in list(webtoon_data_dict_temp):
+        if i in shared_dict.keys():
+            shared_dict[i][1] += "," + webtoon_data_dict_temp[i][1]
+            webtoon_data_dict_temp.pop(i, None)    
+    shared_dict.update(webtoon_data_dict_temp)
+    
     driver.close()
     return shared_dict
     
@@ -59,12 +64,17 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_synopsis = driver.find_element(By.CSS_SELECTOR, "#comic_desc").text
         item_artist = driver.find_element(By.CLASS_NAME, "author").text.replace("&",",") # & -> ,
         item_adult = item_address[1]
+        
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
+        
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address[0], item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
-    pool = Pool(1) 
+    pool = Pool(2) 
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], genre_name[i], cookie_list))
     pool.close()

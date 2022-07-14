@@ -52,6 +52,10 @@ def get_element_data(driver, item_address, item_genre, i, item_adult):
         
     item_synopsis = "None"
     item_artist = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextArtist']").text
+
+    item_synopsis = item_synopsis.replace("'", "\\'")
+    item_artist = item_artist.replace("'", "\\'")
+    item_title = item_title.replace("'", "\\'")
     
     webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                     item_date, item_finish_status, item_synopsis, item_artist, item_adult]

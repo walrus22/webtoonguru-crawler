@@ -51,12 +51,16 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_date = "완결"
         item_finish_status = "완결"
         
+        item_synopsis = item_synopsis.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'")
+        item_title = item_title.replace("'", "\\'")
+        
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, 
                                       item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_without_cookie(shared_dict, url_list, genre_list):
-    pool = Pool(2) 
+    pool = Pool(3) 
     for i in range(len(url_list)):   #len(url_list)
         pool.apply_async(collect_webtoon_data_without_cookie, args =(shared_dict, url_list[i], genre_list[i]))
     pool.close()
