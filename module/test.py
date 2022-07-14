@@ -89,23 +89,8 @@ if __name__ == '__main__':
     # for i in dict_temp.keys():
     #     if 
     
-    print(1 in dict_temp)
-    print(1 in dict_temp1)
+    arr = [1,2,3,4]
     
-    
-    # webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
-    
-    
-    for i in list(dict_temp2):
-        if i in dict_temp1.keys():
-            dict_temp1[i][1] += "," + dict_temp2[i][1]
-            dict_temp1[i][3] += "," + dict_temp2[i][3]
-            dict_temp2.pop(i, None)
-    dict_temp1.update(dict_temp2)        
-    
-    print(type(str(3)))
-            
-    print(dict_temp1)
-    print(dict_temp2)
+    print(arr[-2])
             
             

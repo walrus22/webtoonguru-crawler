@@ -65,7 +65,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_thumbnail = driver.find_element(By.XPATH, "//span[@class='thmb']/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//h3[@class='hc']").text
         item_synopsis = driver.find_element(By.XPATH, "//p[@class='toon_copy']").text
-        item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//p[@class='toon_author']/span[2]").text, "완료", True)
+        # item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//p[@class='toon_author']/span[2]").text, "완료", True)
+        item_date, item_finish_status = find_date(driver.find_elements(By.XPATH, "//p[@class='toon_author']/span")[-2].text, "완료", True)
         
         artist_list = driver.find_elements(By.CLASS_NAME, "authorInfoBtn")                
         item_artist = ""
@@ -80,7 +81,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         else:
             item_adult = False
             
-        
         # driver.implicitly_wait(0.5)
         # item_adult = driver.find_elements(By.XPATH, "//h3[@class='hc']/em[@class='ico_adult']")
         # if len(item_adult) == 0:
