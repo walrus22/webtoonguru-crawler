@@ -46,10 +46,9 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
         if i in shared_dict.keys():
             shared_temp = shared_dict[i]
             shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
+            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # genre
             shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
-         
+            webtoon_data_dict_temp.pop(i)    
     shared_dict.update(webtoon_data_dict_temp)
     driver.close()
     return 
@@ -101,7 +100,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(2) 
+    pool = Pool(len(url_list)) 
     for i in range(len(url_list)):  #len(url_list)
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
     pool.close()
@@ -111,6 +110,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
 if __name__ == '__main__':
     start = time.time()
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    collection_name = Path(__file__).stem + now
     
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
@@ -148,10 +148,9 @@ if __name__ == '__main__':
     shared_dict_copy = shared_dict.copy()    
     
     # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
+    mydb = my_mongodb('user_shopping_list')
+    collection_nn = mydb.db[collection_name]    
+    collection_nn.insert_many(mydb.convert_to_list(shared_dict_copy))
     print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 
     

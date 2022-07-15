@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     # print(items_df)
     
-    l1 = [1,2,3,4,5]
-    
-    l1 = l1[:7]
+    st1 = "드링커스하이15세이상"
+    print(st1.find("세이상"))
+    print(st1[:-5])
     

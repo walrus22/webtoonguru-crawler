@@ -38,14 +38,12 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_
     webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_name)
     for i in list(webtoon_data_dict_temp):
         if i in shared_dict.keys():
-            shared_temp = shared_dict[i]
-            shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
-            shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
+            shared_dict[i][1] += "," + webtoon_data_dict_temp[i][1]
+            webtoon_data_dict_temp.pop(i, None)    
     shared_dict.update(webtoon_data_dict_temp)
+    
     driver.close()
-    return 
+    return shared_dict
     
 def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
@@ -71,7 +69,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_artist = item_artist.replace("'", "\\'")
         item_title = item_title.replace("'", "\\'")
         
-        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address[0], [item_rank], item_thumbnail, item_title, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address[0], item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
@@ -85,6 +83,8 @@ def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
 if __name__ == '__main__':
     start = time.time()
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    table_name = Path(__file__).stem + now
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     
     genre_list = [4, 3] # 사이트별 설정 
     genre_name = ["bl", "romance"] 
@@ -100,10 +100,11 @@ if __name__ == '__main__':
     pw_tag = "//input[@id='user_pw']"
     driver = driver_set()
     get_url_untill_done(driver, "https://www.bomtoon.com/")
-    time.sleep(2)
+    # time.sleep(2)
     driver.find_elements(By.CLASS_NAME, "popCb")[1].click()
-    time.sleep(2)
+    # time.sleep(2)
     driver.find_element(By.CLASS_NAME, "btn-menu").click()
+    # time.sleep(2)
     login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
     cookie_list = driver.get_cookies()
     driver.close()
@@ -114,11 +115,16 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list)
     shared_dict_copy = shared_dict.copy()
+    # json.dump(shared_dict_copy, file, separators=(',', ':'))
     
-    # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    # store data in mysql db
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
+    
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)
+    # file.close()
+    
 

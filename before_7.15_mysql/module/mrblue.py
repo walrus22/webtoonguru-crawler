@@ -20,19 +20,9 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    ### 7.14 avoid duplicate
-    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
-    for i in list(webtoon_data_dict_temp):
-        if i in shared_dict.keys():
-            shared_temp = shared_dict[i]
-            shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
-            shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
-         
-    shared_dict.update(webtoon_data_dict_temp)
+    shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     driver.close()
-    return 
+    return shared_dict
     
 def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
@@ -67,14 +57,15 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_artist = item_artist.replace("'", "\\'")
         item_title = item_title.replace("'", "\\'")
         
-        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, 
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                     item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(2) 
+    pool = Pool(2) #
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
+        # pool.map(collect_webtoon_data, args = {url_list[i], genre_list[i], ".img"})
     pool.close()
     pool.join()     
 ################################################################################
@@ -82,7 +73,8 @@ def multip(shared_dict, url_list, genre_list, cookie_list):
 if __name__ == '__main__':
     start = time.time()
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')
-    
+    table_name = Path(__file__).stem + now
+    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
     genre_list = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thriller"] 
     url_list=[]
     base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
@@ -104,11 +96,15 @@ if __name__ == '__main__':
     multip(shared_dict, url_list, genre_list, cookie_list)
     shared_dict_copy = shared_dict.copy()
     
-    # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    # store data in mysql db
+    mydb = mysql_db("webtoon_db"+ now)
+    mydb.create_table(table_name)
+    for dict_value in shared_dict_copy.values():
+        mydb.insert_to_mysql(dict_value, table_name)
+    mydb.db.commit()
+    
+    # json.dump(shared_dict, file, separators=(',', ':'))
+    # file.close()
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)
 
     
