@@ -4,8 +4,6 @@ from pathlib import Path
 from multiprocessing import Pool, Manager
 import  requests
 
-
-
 def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult):
     # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
     webtoon_elements_url = []
@@ -130,10 +128,15 @@ if __name__ == '__main__':
     multip_cookie(shared_dict, url_list, genre_name, cookie_list, adult=True) 
     shared_dict_copy = shared_dict.copy()    
     
-    # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    # store json
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    file.close()
+    
+    # # store in mongodb 
+    # collection_name = Path(__file__).stem + now
+    # mydb = my_mongodb("webtoon_db"+ now)
+    # mydb_collection = mydb.db[collection_name]    
+    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
+    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 

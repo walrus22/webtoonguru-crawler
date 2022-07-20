@@ -15,7 +15,7 @@ def collect_webtoon_data_without_cookie(shared_dict, url, genre_tag):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    webtoon_elements_url = webtoon_elements_url[:20]
+    webtoon_elements_url = webtoon_elements_url[:5]
     
     ### 7.14 avoid duplicate
     webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
@@ -71,7 +71,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
     return webtoon_data_dict
 
 def multip_without_cookie(shared_dict, url_list, genre_list):
-    pool = Pool(3) 
+    pool = Pool(len(url_list)) 
     for i in range(len(url_list)):
         pool.apply_async(collect_webtoon_data_without_cookie, args =(shared_dict, url_list[i], genre_list[i]))
     pool.close()
@@ -120,7 +120,7 @@ if __name__ == '__main__':
             else:
                 print("something wrong")
             if shared_dict_copy[id_temp][6] == "완결":
-                item_finish_status = "연재"
+                shared_dict_copy[id_temp][7] = "연재"
                 shared_dict_copy[id_temp][6] = day_temp             
             else:
                 shared_dict_copy[id_temp][6] += "," 
@@ -128,11 +128,16 @@ if __name__ == '__main__':
                 
     driver.close()
                 
-    # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    # store json
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    file.close()
+                
+    # # store in mongodb 
+    # collection_name = Path(__file__).stem + now
+    # mydb = my_mongodb("webtoon_db"+ now)
+    # mydb_collection = mydb.db[collection_name]    
+    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
+    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 
     

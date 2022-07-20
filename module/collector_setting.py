@@ -20,7 +20,7 @@ def driver_set():
     options = Options()
     # options.add_argument("--incognito")
     options.add_argument("--window-size=1920,1080") # for chrome
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_argument("--disable-gpu")    
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-infobars")
@@ -67,29 +67,29 @@ def get_url_untill_done(driver_var, url, random_min=1, random_max=2):
                 raise
             continue     
 
-def find_date(item_date_temp : str, end_comment, day_keyword, daylist_more=[]): # , day_keyword=False "요일" 있으면 True
-    item_date_temp = item_date_temp.replace(" ","") 
+def find_date(date_temp : str, end_comment, day_keyword, daylist_more=[]): # , day_keyword=False "요일" 있으면 True
+    date_temp = date_temp.replace(" ","") 
     daylist = ["월", "화", "수", "목", "금", "토", "일"]
     first_append = True
-    item_date = ""
+    date = ""
     
     if len(daylist_more) != 0:
         daylist = daylist_more + daylist
-    if item_date_temp.find(end_comment) != -1: # end_comment = 완료?
-        item_date = "완결"
-        item_finish_status = "완결"
+    if date_temp.find(end_comment) != -1: # end_comment = 완료?
+        date = "완결"
+        finish_status = "완결"
     else:
-        item_finish_status = "연재"
+        finish_status = "연재"
         for d in daylist:
-            if item_date_temp.find(d) != -1:
-                if d == "일" and day_keyword == True and item_date_temp.find("일요일") == -1:
+            if date_temp.find(d) != -1:
+                if d == "일" and day_keyword == True and date_temp.find("일요일") == -1:
                     break                    
                 if first_append == True:
-                    item_date += d
+                    date += d
                     first_append = False
                 else:                    
-                    item_date += "," + d
-    return item_date, item_finish_status              
+                    date += "," + d
+    return date, finish_status              
 
 
 def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
@@ -101,8 +101,8 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
     time.sleep(random.uniform(5,7))
 
-def is_adult(item_adult_string, key_word):
-    if item_adult_string.find(key_word) != -1: # adult
+def is_adult(adult_string, key_word):
+    if adult_string.find(key_word) != -1: # adult
         return True
     else:
         return False
@@ -120,7 +120,7 @@ class mysql_db:
         
     def create_table(self, table_name):
         self.cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
-        self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address LONGTEXT, item_rank VARCHAR(255), item_thumbnail LONGTEXT, item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis LONGTEXT, item_artist VARCHAR(255), item_adult boolean)".format(table_name))
+        self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), genre VARCHAR(255), address LONGTEXT, rank VARCHAR(255), thumbnail LONGTEXT, title VARCHAR(255), date VARCHAR(255), finish_status VARCHAR(255), synopsis LONGTEXT, artist VARCHAR(255), adult boolean)".format(table_name))
         
     def insert_to_mysql(self, list_element, table_name):
         str_temp=""
@@ -134,7 +134,7 @@ class mysql_db:
             else: 
                 str_temp += ',\'{}\''.format(i)
 
-        self.cursor.execute("INSERT INTO {table} (item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
+        self.cursor.execute("INSERT INTO {table} (item_id, genre, address, rank, thumbnail, title, date, finish_status, synopsis, artist, adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
         
         # print(self.cursor.rowcount, "record inserted")
 
@@ -146,7 +146,7 @@ class my_mongodb:
         self.db = client[db_name]
     
     def convert_to_list(self, shared_dict_copy):
-        field_tag = ['item_id', 'item_genre', 'item_address', 'item_rank', 'item_thumbnail', 'item_title', 'item_date', 'item_finish_status', 'item_synopsis', 'item_artist', 'item_adult']
+        field_tag = ['item_id', 'genre', 'address', 'rank', 'thumbnail', 'title', 'date', 'finish_status', 'synopsis', 'artist', 'adult']
         converted_list = []
         for element in shared_dict_copy.values():
             converted_list.append(dict(zip(field_tag, element)))
@@ -155,7 +155,10 @@ class my_mongodb:
     # collection_name = dbname["your_db_name"]    
     # collection_name.insert_many(convert_to_list(shared_dict_copy))
     
-        
+    # self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address LONGTEXT, item_rank VARCHAR(255), item_thumbnail LONGTEXT, item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis LONGTEXT, item_artist VARCHAR(255), item_adult boolean)".format(table_name))
+    # self.cursor.execute("INSERT INTO {table} (item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
+    # field_tag = ['item_id', 'item_genre', 'item_address', 'item_rank', 'item_thumbnail', 'item_title', 'item_date', 'item_finish_status', 'item_synopsis', 'item_artist', 'item_adult']
+ 
 
 """
 파이썬 웹툰데이타 클래스를 만들까? 만들어서 instance 로 id, title.. 저장하는게 더 빠르거나 깔끔하려나? 

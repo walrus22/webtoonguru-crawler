@@ -80,17 +80,19 @@ if __name__ == '__main__':
     
     # get_url_untill_done(driver, url)
     # # item_synopsis = driver.find_element(By.ID, "comic_desc").text
-    # print(driver.find_element(By.ID, "comic_desc").text)
-    dict_temp = {}
-    dict_temp1 = {'1' : ['1', 'romance', 'hi', '1'],
-                  '2' : ['2', 'bl', 'hlee', '5']}
-    dict_temp2 = {'2' : ['2', 'romance', 'hleo', '4'], 
-                  '3' : ['3', 'gl', 'sd', '6'], }
-    # for i in dict_temp.keys():
-    #     if 
+    # # print(driver.find_element(By.ID, "comic_desc").text)
+    # dict_temp = {}
+    # dict_temp1 = {'1' : ['1', 'romance', 'hi', '1'],
+    #               '2' : ['2', 'bl', 'hlee', '5']}
+    # dict_temp2 = {'2' : ['2', 'romance', 'hleo', '4'], 
+    #               '3' : ['3', 'gl', 'sd', '6'], }
+    # # for i in dict_temp.keys():
+    # #     if 
     
-    arr = [1,2,3,4]
+    # arr = [1,2,3,4]
     
-    print(arr[5])
+    # print(arr[5])
 
+    a = 'naver.py'
     
+    print(a[:-3])

@@ -58,7 +58,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_id = item_address[0][item_address[0].rfind("/")+1:]
         
         item_thumbnail = driver.find_element(By.XPATH, "//div[@class='kv']/span").get_attribute("style")
-        item_thumbnail = item_thumbnail[item_thumbnail.index('(')+3:-3]
+        item_thumbnail = item_thumbnail[item_thumbnail.index('(')+2:-3]
         
         item_title = driver.find_element(By.XPATH, "//p[@id='bt-comic-name']").text
         item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//div[@class='head']/span").text, "완결", True, ["열흘"])
@@ -115,10 +115,15 @@ if __name__ == '__main__':
     multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list)
     shared_dict_copy = shared_dict.copy()
     
-    # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    # store json
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    file.close()
+    
+    # # store in mongodb 
+    # collection_name = Path(__file__).stem + now
+    # mydb = my_mongodb("webtoon_db"+ now)
+    # mydb_collection = mydb.db[collection_name]    
+    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
+    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 

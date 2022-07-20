@@ -104,11 +104,16 @@ if __name__ == '__main__':
     multip(shared_dict, url_list, genre_list, cookie_list)
     shared_dict_copy = shared_dict.copy()
     
-    # store in mongodb 
-    collection_name = Path(__file__).stem + now
-    mydb = my_mongodb("webtoon_db"+ now)
-    mydb_collection = mydb.db[collection_name]    
-    mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    # store json
+    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
+    json.dump(shared_dict_copy, file, separators=(',', ':'))
+    file.close()
+    
+    # # store in mongodb 
+    # collection_name = Path(__file__).stem + now
+    # mydb = my_mongodb("webtoon_db"+ now)
+    # mydb_collection = mydb.db[collection_name]    
+    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
+    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 
     
