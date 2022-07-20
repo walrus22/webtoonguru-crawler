@@ -14,7 +14,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 import mysql.connector
 import datetime
 from pymongo import MongoClient
-from pandas import DataFrame
 
 def driver_set():
     options = Options()
@@ -30,10 +29,10 @@ def driver_set():
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
-    # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
+    chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
     # chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
-    # driver = webdriver.Chrome(chrome_driver, options=options)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(chrome_driver, options=options)
+    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
     # mac: sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222

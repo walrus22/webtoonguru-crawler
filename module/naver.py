@@ -63,7 +63,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_finish_status = "완결"
         
         item_synopsis = item_synopsis.replace("'", "\\'")
-        item_artist = item_artist.replace("'", "\\'")
+        item_artist = item_artist.replace("'", "\\'").replace(" ","").replace("/",",")
         item_title = item_title.replace("'", "\\'")
         
         webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, 
