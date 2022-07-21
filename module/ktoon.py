@@ -49,7 +49,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-        get_url_untill_done(driver, item_address)
+        get_url_untill_done(driver, item_address, 0, 0)
         item_rank += 1
         item_id = item_address[item_address.rfind("=")+1:]
         
@@ -83,8 +83,8 @@ if __name__ == '__main__':
     start = time.time()
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
-    # genre_list = ["5", "1"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
-    # genre_name = ["drama", "daily"]
+    # genre_list = ["8"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
+    # genre_name = ["sensibility"]
     base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"
     url_list=[]
     for u in genre_list:
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     driver.quit()
     
     # main
-    shared_dict_copy = collect_multiprocessing(2, collect_webtoon_data, base_url, genre_list, cookie_list, genre_name)
+    shared_dict_copy = collect_multiprocessing(1, collect_webtoon_data, base_url, genre_list, cookie_list, genre_name)
     save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start) 
     
 

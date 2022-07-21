@@ -11,7 +11,7 @@ from pathlib import Path
 
 if __name__ == '__main__':
     start = time.time()
-    tasks = ['bomtoon.py']
+    tasks = ['ktoon.py']
     # tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py']
     # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py', 'kakao_webtoon.py']
 
