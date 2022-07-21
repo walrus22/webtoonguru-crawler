@@ -3,15 +3,12 @@ import json
 from pathlib import Path
 from multiprocessing import Pool, Manager
 
-def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
-    # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-    webtoon_elements_url = []
-
+def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     # login with cookie 
     driver = driver_set()
-    # get_url_untill_done(driver, "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq=100#")
-    # for cookie in cookie_list:
-    #     driver.add_cookie(cookie)
+    get_url_untill_done(driver, "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq=100#")
+    for cookie in cookie_list:
+        driver.add_cookie(cookie)
     get_url_untill_done(driver, url) # 버튼 자동으로 바뀌네
     
     # # 다음 페이지 있으면 탐색 flag.. 쓰지말자
@@ -32,25 +29,16 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list):
     #         webtoon_elements = driver.find_elements(By.CSS_SELECTOR, css_tag) # webtoon element selection.         
     #         webtoon_data_dict.update(get_element_data(webtoon_elements, genre_tag, rank_basis))    
     
-    # collect item url    
+    # collect item url  
+    webtoon_elements_url = []
     webtoon_elements = driver.find_elements(By.XPATH, "//li[@class='tm7']") # webtoon element selection. 
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    # test
-    # webtoon_elements_url = webtoon_elements_url[:4 ]s
+    # webtoon_elements_url = webtoon_elements_url[:3]
     
-    ### 7.14 avoid duplicate
-    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
-    for i in list(webtoon_data_dict_temp):
-        if i in shared_dict.keys():
-            shared_temp = shared_dict[i]
-            shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
-            shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
-         
-    shared_dict.update(webtoon_data_dict_temp)
+    ### 7.21 avoid duplicate
+    catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
     driver.close()
     return 
            
@@ -64,12 +52,10 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         get_url_untill_done(driver, item_address)
         item_rank += 1
         item_id = item_address[item_address.rfind("=")+1:]
-        # item_id = item_address[item_address.rfind("=")+1:] + "_" + item_genre
         
         item_thumbnail = driver.find_element(By.XPATH, "//span[@class='thmb']/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//h3[@class='hc']").text
         item_synopsis = driver.find_element(By.XPATH, "//p[@class='toon_copy']").text
-        # item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//p[@class='toon_author']/span[2]").text, "완료", True)
         item_date, item_finish_status = find_date(driver.find_elements(By.XPATH, "//p[@class='toon_author']/span")[-2].text, "완료", True)
         
         artist_list = driver.find_elements(By.CLASS_NAME, "authorInfoBtn")                
@@ -78,40 +64,23 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
             item_artist += k.text
             if artist_list.index(k) != len(artist_list)-1:
                 item_artist += ","
-        
+    
         if item_title.find("19세이상") != -1:
             item_adult = True
             item_title = item_title[:item_title.find("19세이상") ]
         else:
             item_adult = False
-            
-        # driver.implicitly_wait(0.5)
-        # item_adult = driver.find_elements(By.XPATH, "//h3[@class='hc']/em[@class='ico_adult']")
-        # if len(item_adult) == 0:
-        #     item_adult = False
-        # else:
-        #     item_adult = True
-        item_synopsis = item_synopsis.replace("'", "\\'")
-        item_artist = item_artist.replace("'", "\\'")
-        item_title = item_title.replace("'", "\\'")
+        
         if item_title.find("세이상") != -1:
             item_title = item_title[:-5]        
-        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, 
-                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+            
+        insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
     return webtoon_data_dict
 
-def multip_cookie(shared_dict, url_list, genre_list, cookie_list):
-    pool = Pool(2) 
-    for i in range(len(url_list)):  #len(url_list)
-        pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], cookie_list))
-    pool.close()
-    pool.join()     
 
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
-    
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
     # genre_list = ["5", "1"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
@@ -142,21 +111,7 @@ if __name__ == '__main__':
     driver.quit()
     
     # main
-    manager = Manager()
-    shared_dict = manager.dict()
-    multip_cookie(shared_dict, url_list, genre_name, cookie_list=[]) # choose one
-    shared_dict_copy = shared_dict.copy()    
+    shared_dict_copy = collect_multiprocessing(2, collect_webtoon_data, base_url, genre_list, cookie_list, genre_name)
+    save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start) 
     
-    # store json
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
-    file.close()
-    
-    # # store in mongodb 
-    # collection_name = Path(__file__).stem + now
-    # mydb = my_mongodb("webtoon_db"+ now)
-    # mydb_collection = mydb.db[collection_name]    
-    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 
-    

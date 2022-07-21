@@ -2,6 +2,9 @@ from mimetypes import init
 import os
 import time
 import random
+import json
+from multiprocessing import Pool, Manager
+
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -11,7 +14,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 
-import mysql.connector
+# import mysql.connector
 import datetime
 from pymongo import MongoClient
 
@@ -29,23 +32,20 @@ def driver_set():
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
-    chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
+    # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
     # chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
-    driver = webdriver.Chrome(chrome_driver, options=options)
-    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # driver = webdriver.Chrome(chrome_driver, options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
     # mac: sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
     # http://localhost:9222/ 접속되는지 확인
-    # print("#################################")
-    # print(Path(__file__).stem)
-    # print("#################################")
-    # driver.set_window_position(2560, 0) # for imac dual monior
+    driver.set_window_position(2560, 0) # for imac dual monior
     # driver.set_window_position(3520, 0) # for imac dual monior
     driver.implicitly_wait(300)
     return driver
 
-def get_url_untill_done(driver_var, url, random_min=1, random_max=2):
+def get_url_untill_done(driver_var, url, random_min=2, random_max=3):
     count = 1
     for i in range(1, 10): # limit trying
         try:
@@ -65,6 +65,37 @@ def get_url_untill_done(driver_var, url, random_min=1, random_max=2):
             if i == 10:
                 raise
             continue     
+
+def catch_duplicate(webtoon_data_dict_temp, shared_dict):
+    for key in list(webtoon_data_dict_temp): 
+        if key in shared_dict.keys():
+            shared_temp = shared_dict[key]
+            shared_temp[1]+= (webtoon_data_dict_temp[key][1]) # genre
+            shared_temp[3]+= (webtoon_data_dict_temp[key][3]) # rank
+            shared_dict[key] = shared_temp
+            webtoon_data_dict_temp.pop(key) 
+    shared_dict.update(webtoon_data_dict_temp)
+
+def collect_multiprocessing(pool_size, collect_webtoon_data, base_url, genre_list, cookie_list=[], genre_name=[]):
+    url_list=[]
+    for u in genre_list:
+        url_list.append(base_url.format(u))
+        
+    if len(genre_name) != 0:
+        genre_list = genre_name
+    
+    manager = Manager()
+    shared_dict = manager.dict()
+    
+    pool = Pool(pool_size) 
+    for i in range(len(url_list)):  #len(url_list)
+        pool.apply_async(collect_webtoon_data, args =(shared_dict, url_list[i], genre_list[i], cookie_list))        
+        time.sleep(random.uniform(0.7,1.5))
+    pool.close()
+    pool.join() 
+    
+    shared_dict_copy = shared_dict.copy() 
+    return shared_dict_copy
 
 def find_date(date_temp : str, end_comment, day_keyword, daylist_more=[]): # , day_keyword=False "요일" 있으면 True
     date_temp = date_temp.replace(" ","") 
@@ -88,8 +119,27 @@ def find_date(date_temp : str, end_comment, day_keyword, daylist_more=[]): # , d
                     first_append = False
                 else:                    
                     date += "," + d
-    return date, finish_status              
+    return date, finish_status     
 
+def insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult):
+    webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+    
+        # webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+
+def is_adult(adult_string, key_word):
+    if adult_string.find(key_word) != -1: # adult
+        return True
+    else:
+        return False       
+
+def save_as_json(path_cwd, file_name, shared_dict_copy, start_time):
+    with open(os.path.join(path_cwd, "module", "json", "{}.json".format(file_name)), "w") as file:
+        json.dump(shared_dict_copy, file, separators=(',', ':'))
+    print("{} >> ".format(file_name), time.time() - start_time)   
+
+
+def escape_apostrophe(str_temp):
+    return str_temp.replace("'","\\'")
 
 def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     time.sleep(random.uniform(2,3))
@@ -100,64 +150,15 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
     time.sleep(random.uniform(5,7))
 
-def is_adult(adult_string, key_word):
-    if adult_string.find(key_word) != -1: # adult
-        return True
-    else:
-        return False
 
 
-class mysql_db:
-    def __init__(self, db_name):
-        self.db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Zmfhffldxptmxm123!@#",
-        database=db_name
-        )
-        self.cursor = self.db.cursor()
-        
-    def create_table(self, table_name):
-        self.cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
-        self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), genre VARCHAR(255), address LONGTEXT, rank VARCHAR(255), thumbnail LONGTEXT, title VARCHAR(255), date VARCHAR(255), finish_status VARCHAR(255), synopsis LONGTEXT, artist VARCHAR(255), adult boolean)".format(table_name))
-        
-    def insert_to_mysql(self, list_element, table_name):
-        str_temp=""
-        first = True
-        for i in list_element:
-            if first == True:
-                str_temp += '\'{}\''.format(i)
-                first = False
-            elif type(i) != str:
-                str_temp += ',{}'.format(i)
-            else: 
-                str_temp += ',\'{}\''.format(i)
-
-        self.cursor.execute("INSERT INTO {table} (item_id, genre, address, rank, thumbnail, title, date, finish_status, synopsis, artist, adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
-        
-        # print(self.cursor.rowcount, "record inserted")
-
-class my_mongodb:
-    def __init__(self, db_name):
-        import pymongo
-        CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
-        client = MongoClient(CONNECTION_STRING)
-        self.db = client[db_name]
-    
-    def convert_to_list(self, shared_dict_copy):
-        field_tag = ['item_id', 'genre', 'address', 'rank', 'thumbnail', 'title', 'date', 'finish_status', 'synopsis', 'artist', 'adult']
-        converted_list = []
-        for element in shared_dict_copy.values():
-            converted_list.append(dict(zip(field_tag, element)))
-        return converted_list
-        
-    # collection_name = dbname["your_db_name"]    
-    # collection_name.insert_many(convert_to_list(shared_dict_copy))
-    
-    # self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address LONGTEXT, item_rank VARCHAR(255), item_thumbnail LONGTEXT, item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis LONGTEXT, item_artist VARCHAR(255), item_adult boolean)".format(table_name))
-    # self.cursor.execute("INSERT INTO {table} (item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
-    # field_tag = ['item_id', 'item_genre', 'item_address', 'item_rank', 'item_thumbnail', 'item_title', 'item_date', 'item_finish_status', 'item_synopsis', 'item_artist', 'item_adult']
- 
+# def save_to_mongodb():
+# # store in mongodb 
+# collection_name = Path(__file__).stem + now
+# mydb = my_mongodb("webtoon_db"+ now)
+# mydb_collection = mydb.db[collection_name]    
+# mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
+# print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 
 """
 파이썬 웹툰데이타 클래스를 만들까? 만들어서 instance 로 id, title.. 저장하는게 더 빠르거나 깔끔하려나? 
@@ -167,3 +168,57 @@ getId 같은 함수만들어서 해도되고.. 지금은 리스트의 순서에 
 # class webtoon_data:
 #     def __init__(self):
 #         pass
+
+
+# class mysql_db:
+#     def __init__(self, db_name):
+#         self.db = mysql.connector.connect(
+#         host="localhost",
+#         user="root",
+#         password="Zmfhffldxptmxm123!@#",
+#         database=db_name
+#         )
+#         self.cursor = self.db.cursor()
+        
+#     def create_table(self, table_name):
+#         self.cursor.execute("DROP TABLE IF EXISTS {}".format(table_name))
+#         self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), genre VARCHAR(255), address LONGTEXT, rank VARCHAR(255), thumbnail LONGTEXT, title VARCHAR(255), date VARCHAR(255), finish_status VARCHAR(255), synopsis LONGTEXT, artist VARCHAR(255), adult boolean)".format(table_name))
+        
+#     def insert_to_mysql(self, list_element, table_name):
+#         str_temp=""
+#         first = True
+#         for i in list_element:
+#             if first == True:
+#                 str_temp += '\'{}\''.format(i)
+#                 first = False
+#             elif type(i) != str:
+#                 str_temp += ',{}'.format(i)
+#             else: 
+#                 str_temp += ',\'{}\''.format(i)
+
+#         self.cursor.execute("INSERT INTO {table} (item_id, genre, address, rank, thumbnail, title, date, finish_status, synopsis, artist, adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
+        
+#         # print(self.cursor.rowcount, "record inserted")
+
+# class my_mongodb:
+#     def __init__(self, db_name):
+#         import pymongo
+#         CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
+#         client = MongoClient(CONNECTION_STRING)
+#         self.db = client[db_name]
+    
+#     def convert_to_list(self, shared_dict_copy):
+#         field_tag = ['item_id', 'genre', 'address', 'rank', 'thumbnail', 'title', 'date', 'finish_status', 'synopsis', 'artist', 'adult']
+#         converted_list = []
+#         for element in shared_dict_copy.values():
+#             converted_list.append(dict(zip(field_tag, element)))
+#         return converted_list
+        
+    # collection_name = dbname["your_db_name"]    
+    # collection_name.insert_many(convert_to_list(shared_dict_copy))
+    
+    # self.cursor.execute("Create TABLE {} (id INT AUTO_INCREMENT PRIMARY KEY, item_id VARCHAR(255), item_genre VARCHAR(255), item_address LONGTEXT, item_rank VARCHAR(255), item_thumbnail LONGTEXT, item_title VARCHAR(255), item_date VARCHAR(255), item_finish_status VARCHAR(255), item_synopsis LONGTEXT, item_artist VARCHAR(255), item_adult boolean)".format(table_name))
+    # self.cursor.execute("INSERT INTO {table} (item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) VALUES ({value_str})".format(table=table_name, value_str=str_temp))
+    # field_tag = ['item_id', 'item_genre', 'item_address', 'item_rank', 'item_thumbnail', 'item_title', 'item_date', 'item_finish_status', 'item_synopsis', 'item_artist', 'item_adult']
+ 
+

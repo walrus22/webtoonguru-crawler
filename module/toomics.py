@@ -29,16 +29,8 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult)
         item_address_temp = element.find_element(By.XPATH, "./a").get_attribute("href")
         webtoon_elements_url.append("https://www.toomics.com/webtoon/episode/toon/" + item_address_temp[item_address_temp.rfind("/")+1:])
     
-    ### 7.14 avoid duplicate
-    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag, adult)
-    for i in list(webtoon_data_dict_temp):
-        if i in shared_dict.keys():
-            shared_temp = shared_dict[i]
-            shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
-            shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
-    shared_dict.update(webtoon_data_dict_temp)
+    ### 7.21 avoid duplicate
+    catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag, adult), shared_dict)
     driver.close()
     return 
 
@@ -48,7 +40,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre, adult):
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-        get_url_untill_done(driver, item_address)
+        get_url_untill_done(driver, item_address, 1, 2)
         item_rank += 1
         item_id = item_address[item_address.rfind("/")+1:]
         item_thumbnail = driver.find_element(By.XPATH, "//div[@class='episode__thumbnail']/img").get_attribute("src")
@@ -70,15 +62,11 @@ def get_element_data(driver, webtoon_elements_url, item_genre, adult):
         item_artist = driver.find_element(By.XPATH, "//dl[@class='episode__author']/dd").text.replace("/",",")
         item_adult = adult
         
-        item_synopsis = item_synopsis.replace("'", "\\'")
-        item_artist = item_artist.replace("'", "\\'")
-        item_title = item_title.replace("'", "\\'")
-        
         if item_synopsis.find("+ 더보기") != -1:
             item_synopsis = item_synopsis[:item_synopsis.find("+ 더보기")]
         
-        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, 
-                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+        insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) 
+        
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, cookie_list, adult):
@@ -92,14 +80,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list, adult):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
-    genre_list = ["8", "1066", "5", "1065", "2570", "1444", "1443", "1441", "7"]
-    genre_name = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "horror/thrill", "bl"] 
-    base_url = "https://www.toomics.com/webtoon/top100/genre/{}"
-    url_list=[]
-    for u in genre_list:
-        url_list.append(base_url.format(u))
-        
+ 
     # get login cookies
     driver = driver_set()
     get_url_untill_done(driver, "https://www.toomics.com/ko")
@@ -117,6 +98,12 @@ if __name__ == '__main__':
     # main
     manager = Manager()
     shared_dict = manager.dict()
+    base_url = "https://www.toomics.com/webtoon/top100/genre/{}"
+    genre_list = ["8", "1066", "5", "1065", "2570", "1444", "1443", "1441", "7"]
+    genre_name = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "horror/thrill", "bl"] 
+    url_list=[]
+    for u in genre_list:
+        url_list.append(base_url.format(u))
     multip_cookie(shared_dict, url_list, genre_name, cookie_list, adult=False) # choose one
 
     # collect item for adult site
@@ -129,14 +116,4 @@ if __name__ == '__main__':
     shared_dict_copy = shared_dict.copy()    
     
     # store json
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
-    file.close()
-    
-    # # store in mongodb 
-    # collection_name = Path(__file__).stem + now
-    # mydb = my_mongodb("webtoon_db"+ now)
-    # mydb_collection = mydb.db[collection_name]    
-    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
-
+    save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start)

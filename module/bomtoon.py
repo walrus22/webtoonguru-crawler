@@ -4,9 +4,6 @@ from pathlib import Path
 from multiprocessing import Pool, Manager
 
 def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_list):
-    # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-    webtoon_elements_url = []
-
     # login with cookie 
     driver = driver_set()
     get_url_untill_done(driver, "https://www.bomtoon.com/")
@@ -23,6 +20,7 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_
     time.sleep(0.5)
     
     # collect item url   
+    webtoon_elements_url = []
     webtoon_elements = driver.find_elements(By.XPATH, "//ul[@id='bt-rank-list']/li") # webtoon element selection. 
     for element in webtoon_elements:
         # 주소랑 성인여부 함께 보냄
@@ -34,22 +32,15 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, genre_name, cookie_
         webtoon_elements_url.append([element.find_element(By.XPATH, "./a").get_attribute("href"), item_adult])
     driver.implicitly_wait(30)
     
-    ### 7.14 avoid duplicate
-    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_name)
-    for i in list(webtoon_data_dict_temp):
-        if i in shared_dict.keys():
-            shared_temp = shared_dict[i]
-            shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
-            shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
-    shared_dict.update(webtoon_data_dict_temp)
+    ### 7.21 avoid duplicate
+    catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_name), shared_dict)
     driver.close()
     return 
     
 def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
+    genre_template = ["로맨스","BL","GL","드라마","판타지","개그","액션·스포츠","공포·스릴러"]
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
@@ -66,17 +57,13 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_synopsis = driver.find_element(By.CSS_SELECTOR, "#comic_desc").text
         item_artist = driver.find_element(By.CLASS_NAME, "author").text.replace("&",",") # & -> ,
         item_adult = item_address[1]
+        item_address = item_address[0]
         
-        item_synopsis = item_synopsis.replace("'", "\\'")
-        item_artist = item_artist.replace("'", "\\'")
-        item_title = item_title.replace("'", "\\'")
-        
-        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address[0], [item_rank], item_thumbnail, item_title, 
-                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+        insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
-    pool = Pool(2) 
+    pool = Pool(1) 
     for i in range(len(url_list)):  
         pool.apply_async(collect_webtoon_data_cookie, args =(shared_dict, url_list[i], genre_list[i], genre_name[i], cookie_list))
     pool.close()
@@ -116,14 +103,6 @@ if __name__ == '__main__':
     shared_dict_copy = shared_dict.copy()
     
     # store json
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
-    file.close()
-    
-    # # store in mongodb 
-    # collection_name = Path(__file__).stem + now
-    # mydb = my_mongodb("webtoon_db"+ now)
-    # mydb_collection = mydb.db[collection_name]    
-    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
+    save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start) 
+    print("{} >> ".format(Path(__file__).stem), time.time() - start)   
 

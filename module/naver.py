@@ -3,31 +3,20 @@ import json
 from pathlib import Path
 from multiprocessing import Pool, Manager
 
-def collect_webtoon_data_without_cookie(shared_dict, url, genre_tag):
-    # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-    webtoon_elements_url = []
-    
+def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     # collect item url    
     driver = driver_set()
     get_url_untill_done(driver, url)
     webtoon_elements = driver.find_elements(By.CSS_SELECTOR, ".thumb") # webtoon element selection. 
     webtoon_elements.pop(0) # naver 장르별 첫 thumb 무시하기!    
+    webtoon_elements_url = []
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    webtoon_elements_url = webtoon_elements_url[:5]
+    #test
+    # webtoon_elements_url = webtoon_elements_url[:5]
     
-    ### 7.14 avoid duplicate
-    webtoon_data_dict_temp = get_element_data(driver, webtoon_elements_url, genre_tag)
-    for i in list(webtoon_data_dict_temp):
-        if i in shared_dict.keys():
-            shared_temp = shared_dict[i]
-            shared_temp[1]+= (webtoon_data_dict_temp[i][1]) # genre
-            shared_temp[3]+= (webtoon_data_dict_temp[i][3]) # rank
-            shared_dict[i] = shared_temp
-            webtoon_data_dict_temp.pop(i)   
-         
-    shared_dict.update(webtoon_data_dict_temp)
+    catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
     driver.close()
     return 
         
@@ -51,49 +40,30 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
             item_adult = True
         else:
             item_adult = False
+            
+        # temporarily store
+        item_date = "완결"
+        item_finish_status = "완결"
+        item_artist = item_artist.replace(" ","").replace("/",",")
         
         # if len(webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")) != 1:
         # if webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")[1].get_attribute("class") == "ico_cut":
         #     etc_status = "컷툰"
         # else:
         #     etc_status = "신작"
-    
-        # temporarily store
-        item_date = "완결"
-        item_finish_status = "완결"
         
-        item_synopsis = item_synopsis.replace("'", "\\'")
-        item_artist = item_artist.replace("'", "\\'").replace(" ","").replace("/",",")
-        item_title = item_title.replace("'", "\\'")
-        
-        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, 
-                                      item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+        insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
     return webtoon_data_dict
-
-def multip_without_cookie(shared_dict, url_list, genre_list):
-    pool = Pool(len(url_list)) 
-    for i in range(len(url_list)):
-        pool.apply_async(collect_webtoon_data_without_cookie, args =(shared_dict, url_list[i], genre_list[i]))
-    pool.close()
-    pool.join()     
 
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
-    genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
+    # genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
+    genre_list = ["daily", "comic", "fantasy", "action"]
     base_url = "https://comic.naver.com/webtoon/genre?genre={}"
-    url_list=[]
-    for u in genre_list:
-        url_list.append(base_url.format(u))
-
-    # main
-    manager = Manager()
-    shared_dict = manager.dict()
-    multip_without_cookie(shared_dict, url_list, genre_list)
-    shared_dict_copy = shared_dict.copy()
+    shared_dict_copy = collect_multiprocessing(2, collect_webtoon_data, base_url, genre_list)
     
-    # get date from daily page
+    # # get date from daily page
     driver = driver_set()
     get_url_untill_done(driver, "https://comic.naver.com/webtoon/weekday")
     daily_elements = driver.find_elements(By.CSS_SELECTOR, ".thumb")
@@ -125,19 +95,7 @@ if __name__ == '__main__':
             else:
                 shared_dict_copy[id_temp][6] += "," 
                 shared_dict_copy[id_temp][6] += day_temp 
-                
     driver.close()
                 
-    # store json
-    file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    json.dump(shared_dict_copy, file, separators=(',', ':'))
-    file.close()
-                
-    # # store in mongodb 
-    # collection_name = Path(__file__).stem + now
-    # mydb = my_mongodb("webtoon_db"+ now)
-    # mydb_collection = mydb.db[collection_name]    
-    # mydb_collection.insert_many(mydb.convert_to_list(shared_dict_copy))
-    # print("{} >> ".format(Path(__file__).stem), time.time() - start)   
-
-    
+    # save_as_json
+    save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start)

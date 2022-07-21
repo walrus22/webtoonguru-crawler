@@ -11,17 +11,17 @@ from pathlib import Path
 
 if __name__ == '__main__':
     start = time.time()
-    # tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py']
-    tasks = ['naver.py']
+    tasks = ['bomtoon.py']
+    # tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py']
     # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py', 'kakao_webtoon.py']
 
-    process_list = []
-    for task in tasks:
-        process_list.append(subprocess.Popen(["python3", os.path.join(os.getcwd(), "module", task)]))
-    for p in process_list:
-        time.sleep(0.5)
-        p.wait()
-    print("total crawling time >> ", time.time() - start)  
+    # process_list = []
+    # for task in tasks:
+    #     process_list.append(subprocess.Popen(["python3", os.path.join(os.getcwd(), "module", task)]))
+    # for p in process_list:
+    #     time.sleep(0.5)
+    #     p.wait()
+    # print("total crawling time >> ", time.time() - start)  
     
     # store json to mongodb 
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
@@ -38,6 +38,7 @@ if __name__ == '__main__':
             for element in file_data.values():
                 element.insert(0, platform_name)
                 converted_list.append(dict(zip(field_tag, element)))
-        mydb["webtoon_db"+ now].insert_many(converted_list)
+        mydb["webtoon"+ now].insert_many(converted_list)
     
     print("total process time >> ", time.time() - start)  
+

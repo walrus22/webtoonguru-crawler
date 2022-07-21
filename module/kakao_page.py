@@ -49,9 +49,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='jsx-3755015728 descriptionBox descriptionBox_pc  lineHeight']").text
         item_adult = False # 카카오 페이지는 성인물 없나봄
         
-        item_synopsis = item_synopsis.replace("'", "\\'")
-        item_artist = item_artist.replace("'", "\\'")
-        item_title = item_title.replace("'", "\\'")
         
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
                                       item_date, item_finish_status, item_synopsis, item_artist, item_adult]
