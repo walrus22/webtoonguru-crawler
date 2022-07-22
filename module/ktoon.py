@@ -35,7 +35,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    # webtoon_elements_url = webtoon_elements_url[:3]
+    webtoon_elements_url = webtoon_elements_url[:5]
     
     ### 7.21 avoid duplicate
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)

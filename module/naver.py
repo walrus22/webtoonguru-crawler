@@ -27,7 +27,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
     
     for item_address in webtoon_elements_url: 
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
-        get_url_untill_done(driver, item_address)
+        get_url_untill_done(driver, item_address, 0,0)
         item_rank += 1
         item_id = item_address[item_address.rfind("=")+1:]
         
@@ -35,12 +35,19 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_title = driver.find_element(By.XPATH, "//div[@class='detail']/h2/span[1]").text
         item_artist = driver.find_element(By.XPATH, "//span[@class='wrt_nm']").text
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='detail']/p").text
-        item_adult = driver.find_element(By.XPATH, "//span[@class='age']").text
-        if item_adult.find("18세") != -1: # adult
-            item_adult = True
-        else:
+        
+        driver.implicitly_wait(0.2)
+        item_adult = driver.find_elements(By.XPATH, "//span[@class='age']")
+        if len(item_adult) == 0 :
             item_adult = False
-            
+        else: 
+            item_adult = item_adult[0].text
+            if item_adult.find("18세") != -1: # adult
+                item_adult = True
+            else:
+                item_adult = False
+        driver.implicitly_wait(10)
+        
         # temporarily store
         item_date = "완결"
         item_finish_status = "완결"
@@ -58,10 +65,10 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    # genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
-    genre_list = ["daily", "comic", "fantasy", "action"]
+    genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
+    # genre_list = ["daily", "comic", "fantasy", "action"]
     base_url = "https://comic.naver.com/webtoon/genre?genre={}"
-    shared_dict_copy = collect_multiprocessing(2, collect_webtoon_data, base_url, genre_list)
+    shared_dict_copy = collect_multiprocessing(1, collect_webtoon_data, base_url, genre_list)
     
     # # get date from daily page
     driver = driver_set()

@@ -42,7 +42,7 @@ def driver_set():
     # http://localhost:9222/ 접속되는지 확인
     driver.set_window_position(2560, 0) # for imac dual monior
     # driver.set_window_position(3520, 0) # for imac dual monior
-    driver.implicitly_wait(300)
+    driver.implicitly_wait(100)
     return driver
 
 def get_url_untill_done(driver_var, url, random_min=2, random_max=3):
@@ -148,7 +148,7 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     driver.find_element(By.XPATH, pw_tag).send_keys(user_pw)
     time.sleep(random.uniform(2,3))
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
-    time.sleep(random.uniform(5,7))
+    time.sleep(random.uniform(3,5))
 
 
 

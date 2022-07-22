@@ -11,8 +11,8 @@ from pathlib import Path
 
 if __name__ == '__main__':
     start = time.time()
-    tasks = ['ktoon.py']
-    # tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py']
+    # tasks = ['lezhin.py']
+    tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'onestory.py', 'toomics.py']
     # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py', 'kakao_webtoon.py']
 
     # process_list = []
@@ -38,7 +38,8 @@ if __name__ == '__main__':
             for element in file_data.values():
                 element.insert(0, platform_name)
                 converted_list.append(dict(zip(field_tag, element)))
-        mydb["webtoon"+ now].insert_many(converted_list)
+        # mydb["webtoon"+ now].insert_many(converted_list)
+        mydb["pedia_demo"].insert_many(converted_list)
     
     print("total process time >> ", time.time() - start)  
 

@@ -35,6 +35,7 @@ def get_element_data(driver, item_address, item_genre, i, item_adult):
     webtoon_data_dict = {}
     item_rank = i+1
     item_id = item_address[item_address.rfind("/")+1:]
+    time.sleep(2)
     item_thumbnail = driver.find_element(By.XPATH, "//div[@class='ThumbnailInner']/img").get_attribute("src")
     item_title = driver.find_element(By.XPATH, "//span[@class='textSt tST18B tDark tDetailTopTextTitle']").text
     item_date = "None"
