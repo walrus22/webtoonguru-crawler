@@ -119,8 +119,8 @@ def find_date(date_temp : str, end_comment, day_keyword, daylist_more=[]): # , d
                     first_append = False
                 else:                    
                     date += "," + d
-        if date == "":
-            date = "연재"
+        # if date == "": 7.26 
+        #     date = "연재"
     return date, finish_status     
 
 def insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult):
