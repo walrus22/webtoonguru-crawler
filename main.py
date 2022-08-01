@@ -172,7 +172,7 @@ class mongo_item:
 if __name__ == '__main__':
     start = time.time()
     # tasks = ['naver.py']
-    tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'naver.py', 'toomics.py']
+    tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py']
     # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py', 'kakao_webtoon.py']
 
     ## Multiprocessor-Crawling ##
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
     CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
     client = MongoClient(CONNECTION_STRING)
-    mydb = client["new_0726_2"]
+    mydb = client["react_test"]
     
     # field_tag = ['platform', 'item_id', 'genre', 'address', 'rank', 'thumbnail', 'title', 'date', 'finish_status', 'synopsis', 'artist', 'adult']
     # for task in tasks:
@@ -229,11 +229,14 @@ if __name__ == '__main__':
             file_data = json.load(file)
             for element in file_data.values():
                 element.insert(0, platform_name)
-                print(element)
+                # print(element)
                 temp = mongo_item(element)
                 temp.update_webtoon(mydb)
     # except Exception as e:
     #     print(e)
     #     print(temp.title)
+    
+    # 나중에 수동으로 중복처리 몇개해야됨
+    # 위에 클래스 설정은 다른 파일로 빼자
                 
     print("total process time >> ", time.time() - start)  

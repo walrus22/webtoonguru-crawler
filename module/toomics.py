@@ -100,7 +100,7 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     base_url = "https://www.toomics.com/webtoon/top100/genre/{}"
     genre_list = ["8", "1066", "5", "1065", "2570", "1444", "1443", "1441", "7"]
-    genre_name = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "horror/thrill", "bl"] 
+    genre_name = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "thrill/horror", "bl"] 
     url_list=[]
     for u in genre_list:
         url_list.append(base_url.format(u))
@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     # collect item for adult site
     genre_list = ["5", "1065", "1066", "6", "1441", "1444", "7"]  #학원/액션, 개그 없음
-    genre_name = ["drama", "romance", "fantasy", "ssul",  "horror/thrill", "sports","bl"] 
+    genre_name = ["drama", "romance", "fantasy", "ssul",  "thrill/horror", "sports","bl"] 
     url_list=[]
     for u in genre_list:
         url_list.append(base_url.format(u))

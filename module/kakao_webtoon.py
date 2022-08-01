@@ -136,7 +136,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')
     table_name = Path(__file__).stem + now
     # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "horror/thriller", "comic/daily"] # 사이트별 설정 
+    genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "thrill/horror", "comic/daily"] # 사이트별 설정 
     base_url = "https://webtoon.kakao.com/ranking"
     
     #### manually ### 

@@ -70,7 +70,7 @@ if __name__ == '__main__':
     driver.close()
     
     # main
-    genre_list = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thriller"] 
+    genre_list = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thrill"] 
     base_url = "https://www.mrblue.com/webtoon/genre/{}?sortby=rank"
     shared_dict_copy = collect_multiprocessing(2, collect_webtoon_data, base_url, genre_list, cookie_list)
     
