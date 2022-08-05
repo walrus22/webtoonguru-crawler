@@ -223,15 +223,21 @@ if __name__ == '__main__':
     #     mydb["pedia_demo"].insert_many(converted_list)
     
     
+    naver = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"]
     bomtoon = ["bl", "romance"] 
     ktoon = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
     mrblue = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thriller"] 
     toomics = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "horror/thrill", "bl"] 
     toomics_adult = ["drama", "romance", "fantasy", "ssul",  "horror/thrill", "sports","bl"] 
-    naver = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"]
+    kakao_webtoon = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "thrill/horror", "comic/daily"] 
+    kakao_page = ["fantasy", "drama", "romance", "romance+fantasy", "historical", "bl"]  # 소년 = fantasy
+    onestory = ["romance", "bl", "drama", "action", "fantasy", "daily", "gag", "thrill","adult"] 
+    
+    
     mongo_item.update_genre(mydb, ktoon, bomtoon , mrblue,toomics, naver, toomics_adult)
     mongo_item.update_genre(mydb, bomtoon)
     mongo_item.update_date(mydb, ["월","화","수","목","금","토","일","연재","완결","열흘"])
+    
     
     #  {
     #    "ktoon" : {
