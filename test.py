@@ -14,17 +14,11 @@ from pathlib import Path
 
 CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
 client = MongoClient(CONNECTION_STRING)
-db = client["dividetest"]
-    
+db = client["react_test2"]
 
+print(db["platform"].find_one({'_id': ObjectId('62eccfe2b3699529a5a76f7e')})['update_time'])
+print(type(db["platform"].find_one({'_id': ObjectId('62eccfe2b3699529a5a76f7e')})['update_time']))
 
-artist = ObjectId('62de87e761a518e1fc35e7ba')
-gaecha = ObjectId('62de87e761a518e1fc35e7b9')
-aa = ObjectId('62de881484a49e383ae8e2e4')
-
-db["artist"].update_one(
-    {"_id" : artist},
-    {"$addToSet" : {"work_list" : gaecha}}
-)
-
-
+a = datetime.datetime.now()
+print(type(a))
+print(type(a.isoformat()))
