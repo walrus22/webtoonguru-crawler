@@ -191,8 +191,8 @@ class mongo_item:
 
 if __name__ == '__main__':
     start = time.time()
-    tasks = ['bomtoon.py']
-    # tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py']
+    # tasks = ['bomtoon.py']
+    tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py', 'naver.py']
     # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestroy.py', 'toomics.py', 'kakao_webtoon.py']
 
     ## Multiprocessor-Crawling ##
@@ -208,7 +208,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
     CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
     client = MongoClient(CONNECTION_STRING)
-    mydb = client["react_test2"]
+    mydb = client["react_test"]
     
     # field_tag = ['platform', 'item_id', 'genre', 'address', 'rank', 'thumbnail', 'title', 'date', 'finish_status', 'synopsis', 'artist', 'adult']
     # for task in tasks:
@@ -224,12 +224,12 @@ if __name__ == '__main__':
     
     
     bomtoon = ["bl", "romance"] 
-    # ktoon = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
-    # mrblue = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thriller"] 
-    # toomics = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "horror/thrill", "bl"] 
-    # toomics_adult = ["drama", "romance", "fantasy", "ssul",  "horror/thrill", "sports","bl"] 
-    # naver = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"]
-    # mongo_item.update_genre(mydb, ktoon, bomtoon , mrblue,toomics, naver, toomics_adult)
+    ktoon = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
+    mrblue = ["romance", "bl", "erotic", "drama", "gl", "action", "fantasy", "thriller"] 
+    toomics = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "horror/thrill", "bl"] 
+    toomics_adult = ["drama", "romance", "fantasy", "ssul",  "horror/thrill", "sports","bl"] 
+    naver = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"]
+    mongo_item.update_genre(mydb, ktoon, bomtoon , mrblue,toomics, naver, toomics_adult)
     mongo_item.update_genre(mydb, bomtoon)
     mongo_item.update_date(mydb, ["월","화","수","목","금","토","일","연재","완결","열흘"])
     
