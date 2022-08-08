@@ -11,7 +11,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
         driver.add_cookie(cookie)
     get_url_untill_done(driver, url) # 버튼 자동으로 바뀌네
     
-    # # 다음 페이지 있으면 탐색 flag.. 쓰지말자
+    # 다음 페이지 있으면 탐색 
     # while True:
     #     get_url_untill_done(driver, url)
     #     driver.implicitly_wait(2)
@@ -29,13 +29,17 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     #         webtoon_elements = driver.find_elements(By.CSS_SELECTOR, css_tag) # webtoon element selection.         
     #         webtoon_data_dict.update(get_element_data(webtoon_elements, genre_tag, rank_basis))    
     
+    # 22.8.6 unify genre 
+    if genre_tag == "fantasy/SF":
+        genre_tag = "fantasy"
+    elif genre_tag == "bl/gl":
+        genre_tag = ["bl", "gl"]
+    
     # collect item url  
     webtoon_elements_url = []
     webtoon_elements = driver.find_elements(By.XPATH, "//li[@class='tm7']") # webtoon element selection. 
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
-    
-    webtoon_elements_url = webtoon_elements_url[:5]
     
     ### 7.21 avoid duplicate
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
@@ -59,11 +63,15 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_date, item_finish_status = find_date(driver.find_elements(By.XPATH, "//p[@class='toon_author']/span")[-2].text, "완료", True)
         
         artist_list = driver.find_elements(By.CLASS_NAME, "authorInfoBtn")                
-        item_artist = ""
-        for k in artist_list:
-            item_artist += k.text
-            if artist_list.index(k) != len(artist_list)-1:
-                item_artist += ","
+        item_artist = []
+        for i in artist_list:
+            item_artist.append(i.text)
+        
+        # item_artist = ""
+        # for k in artist_list:
+        #     item_artist += k.text
+        #     if artist_list.index(k) != len(artist_list)-1:
+        #         item_artist += ","
     
         if item_title.find("19세이상") != -1:
             item_adult = True
@@ -83,8 +91,8 @@ if __name__ == '__main__':
     start = time.time()
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
-    # genre_list = ["8"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
-    # genre_name = ["sensibility"]
+    # genre_list = [ "118"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
+    # genre_name = ["bl/gl"]
     base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"
     url_list=[]
     for u in genre_list:
@@ -111,7 +119,7 @@ if __name__ == '__main__':
     driver.quit()
     
     # main
-    shared_dict_copy = collect_multiprocessing(1, collect_webtoon_data, base_url, genre_list, cookie_list, genre_name)
+    shared_dict_copy = collect_multiprocessing(2, collect_webtoon_data, base_url, genre_list, cookie_list, genre_name)
     save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start) 
     
 

@@ -29,6 +29,23 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult)
         item_address_temp = element.find_element(By.XPATH, "./a").get_attribute("href")
         webtoon_elements_url.append("https://www.toomics.com/webtoon/episode/toon/" + item_address_temp[item_address_temp.rfind("/")+1:])
     
+    
+    
+    # 22.8.6 unify genre 
+    if genre_tag == "horror/thrill":
+        genre_tag = "thrill/horror"
+    elif genre_tag == "school/action":
+        genre_tag = ["school", "action"]
+        
+    if adult == True:
+        if genre_tag == "ssul":
+            genre_tag = "erotic"
+        else:
+            genre_tag = ["erotic"] + list(genre_tag.split())
+            
+    # print(genre_tag)
+    
+        
     ### 7.21 avoid duplicate
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag, adult), shared_dict)
     driver.close()
@@ -59,7 +76,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre, adult):
             item_date, item_finish_status = find_date(item_date, end_comment="완결", day_keyword=False, daylist_more=[])
             
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='episode__summary']").text
-        item_artist = driver.find_element(By.XPATH, "//dl[@class='episode__author']/dd").text.replace("/",",")
+        # item_artist = driver.find_element(By.XPATH, "//dl[@class='episode__author']/dd").text.replace("/",",")
+        item_artist = driver.find_element(By.XPATH, "//dl[@class='episode__author']/dd").text.split("/")
         item_adult = adult
         
         if item_synopsis.find("+ 더보기") != -1:

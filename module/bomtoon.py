@@ -55,7 +55,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_date, item_finish_status = find_date(driver.find_element(By.XPATH, "//div[@class='head']/span").text, "완결", True, ["열흘"])
         # item_date = 열흘말고도 있음?
         item_synopsis = driver.find_element(By.CSS_SELECTOR, "#comic_desc").text
-        item_artist = driver.find_element(By.CLASS_NAME, "author").text.replace("&",",") # & -> ,
+        # item_artist = driver.find_element(By.CLASS_NAME, "author").text.replace("&",",") # & -> ,
+        item_artist = driver.find_element(By.CLASS_NAME, "author").text.split("&")
         item_adult = item_address[1]
         item_address = item_address[0]
         

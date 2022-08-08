@@ -23,6 +23,12 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
+    # 22.8.6 unify genre 
+    if genre_tag == "day":
+        genre_tag = "daily"
+    elif genre_tag == "mystery":
+        genre_tag = "thrill/horror"
+    
     ### 7.21 avoid duplicate
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
     driver.close()
@@ -44,12 +50,17 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         # item_finish_status = 이거도 안나옴 ㅡㅡ;
         item_date = "None"
         item_finish_status = "None"
+        
         item_artist_list = driver.find_elements(By.XPATH, "//div[@class='comicInfo__artist']/a")
-        for i in range(len(item_artist_list)):
-            if i == 0 :
-                item_artist = item_artist_list[i].text
-            else : 
-                item_artist += "," + item_artist_list[i].text
+        item_artist = []
+        for i in item_artist_list:
+            item_artist.append(i.text)
+        
+        # for i in range(len(item_artist_list)):
+        #     if i == 0 :
+        #         item_artist = item_artist_list[i].text
+        #     else : 
+        #         item_artist += "," + item_artist_list[i].text
         
         item_adult = driver.find_element(By.XPATH, "//span[@class='comicInfo__rating']").text
         if item_adult.find("19세") != -1: # adult
@@ -71,13 +82,13 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
                 item_synopsis += "\n" + item_synopsis_list[i].text 
         insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
         
-        counter+=1
-        print("" +item_genre + " >> " + str(counter) + "")
-        if item_synopsis and not item_synopsis.isspace():
-            print(item_synopsis)
-        else:
-            print(item_synopsis)
-            print('String is empty')
+        # counter+=1
+        # print("" +item_genre + " >> " + str(counter) + "")
+        # if item_synopsis and not item_synopsis.isspace():
+        #     print(item_synopsis)
+        # else:
+        #     print(item_synopsis)
+        #     print('String is empty')
         
     return webtoon_data_dict
 

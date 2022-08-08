@@ -14,11 +14,25 @@ from pathlib import Path
 
 CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
 client = MongoClient(CONNECTION_STRING)
-db = client["react_test2"]
+db = client["react_test"]
 
-print(db["platform"].find_one({'_id': ObjectId('62eccfe2b3699529a5a76f7e')})['update_time'])
-print(type(db["platform"].find_one({'_id': ObjectId('62eccfe2b3699529a5a76f7e')})['update_time']))
 
-a = datetime.datetime.now()
-print(type(a))
-print(type(a.isoformat()))
+# artist_temp = "9".strip()
+# print('^{}$'.format(artist_temp))
+# artist_exist = db["artist"].find_one({'name': {'$regex' : '^{}$'.format(artist_temp), "$options" : "i"}})
+# print(artist_exist)
+
+
+author = "엠스토리허브(별땅, 연실), 하하(잉어), 호호, 헤헤, 엠스토리허브(별땅, 123,연실)"
+author1 = "하이, 키키"
+# print(author.split(","))
+
+# if author.index("(") != -1 and author.index(",") > author.index("(") and author.index(",") < author.index(")"):
+#     author = author.replace(",", "/")
+    
+import re
+
+item_artist= []
+item_artist += re.split(r',\s*(?![^()]*\))', author)
+item_artist += re.split(r',\s*(?![^()]*\))', author1)
+print(item_artist)

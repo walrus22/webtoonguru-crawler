@@ -27,20 +27,22 @@ def driver_set():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-infobars")
     options.add_argument("--disable-extensions")
+    options.add_argument('--ignore-certificate-errors-spki-list')
+    options.add_argument('--ignore-ssl-errors')
     # options.add_experimental_option('excludeSwitches', ['enable-logging'])
     
     #### chrome #####
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
-    # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
     # chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
-    # driver = webdriver.Chrome(chrome_driver, options=options)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
+    driver = webdriver.Chrome(chrome_driver, options=options)
+    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
     # mac: sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
     # http://localhost:9222/ 접속되는지 확인
-    driver.set_window_position(2560, 0) # for imac dual monior
+    # driver.set_window_position(2560, 0) # for imac dual monior
     # driver.set_window_position(3520, 0) # for imac dual monior
     driver.implicitly_wait(100)
     return driver
@@ -68,7 +70,7 @@ def get_url_untill_done(driver_var, url, random_min=2, random_max=3):
 
 def catch_duplicate(webtoon_data_dict_temp, shared_dict):
     for key in list(webtoon_data_dict_temp): 
-        if key in shared_dict.keys():
+        if key in shared_dict.keys  ():
             shared_temp = shared_dict[key]
             shared_temp[1]+= (webtoon_data_dict_temp[key][1]) # genre
             shared_temp[3]+= (webtoon_data_dict_temp[key][3]) # rank
@@ -119,12 +121,17 @@ def find_date(date_temp : str, end_comment, day_keyword, daylist_more=[]): # , d
                     first_append = False
                 else:                    
                     date += "," + d
-        # if date == "": 7.26 
-        #     date = "연재"
+        if date == "":
+            date = "비정기"
     return date, finish_status     
 
 def insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult):
-    webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+    # 8.6 separate genre
+    if type(item_genre) == list:
+        item_rank = [item_rank] * len(item_genre)
+        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+    else :
+        webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     
         # webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
 

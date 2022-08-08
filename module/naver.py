@@ -16,6 +16,14 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     #test
     # webtoon_elements_url = webtoon_elements_url[:5]
     
+    # 22.8.6 unify genre 
+    if genre_tag == "pure":
+        genre_tag = "romance"
+    elif genre_tag == "comic":
+        genre_tag = "gag"
+    elif genre_tag == "thrill":
+        genre_tag = "thrill/horror"
+        
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
     driver.close()
     return 
@@ -34,6 +42,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_thumbnail = driver.find_element(By.XPATH, "//div[@class='comicinfo']/div/a/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//div[@class='detail']/h2/span[1]").text
         item_artist = driver.find_element(By.XPATH, "//span[@class='wrt_nm']").text
+        
+        
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='detail']/p").text
         
         driver.implicitly_wait(0.2)
@@ -51,7 +61,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         # temporarily store
         item_date = "완결"
         item_finish_status = "완결"
-        item_artist = item_artist.replace(" ","").replace("/",",")
+        item_artist = item_artist.split("/")
+        # item_artist = item_artist.replace(" ","").replace("/",",")
         
         # if len(webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")) != 1:
         # if webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")[1].get_attribute("class") == "ico_cut":
@@ -66,7 +77,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
 if __name__ == '__main__':
     start = time.time()
     genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
-    # genre_list = ["daily", "comic", "fantasy", "action"]
+    # genre_list = ["thrill"] 
     base_url = "https://comic.naver.com/webtoon/genre?genre={}"
     shared_dict_copy = collect_multiprocessing(1, collect_webtoon_data, base_url, genre_list)
     

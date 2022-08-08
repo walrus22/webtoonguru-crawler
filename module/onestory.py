@@ -10,6 +10,12 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     for cookie in cookie_list:
         driver.add_cookie(cookie)
     
+    # 22.8.6 unify genre 
+    if genre_tag == "thrill":
+        genre_tag = "thrill/horror"
+    elif genre_tag == "adult":
+        genre_tag = "erotic"
+    
     # click item
     for i in range(20): # number of item
         get_url_untill_done(driver, url, 0.7, 1.5)
@@ -45,7 +51,8 @@ def get_element_data(driver, item_address, item_genre, i, item_adult):
     else:
         item_finish_status = "연재"
     item_synopsis = "None"
-    item_artist = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextArtist']").text
+    item_artist = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextArtist']").text.split(",")
+    # item_artist = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextArtist']").text
     
     insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
     
