@@ -48,8 +48,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_title = driver.find_element(By.CSS_SELECTOR, ".comicInfo__title").text
         # item_date = 레진 안나와
         # item_finish_status = 이거도 안나옴 ㅡㅡ;
-        item_date = "None"
-        item_finish_status = "None"
+        item_date = ""
+        item_finish_status = ""
         
         item_artist_list = driver.find_elements(By.XPATH, "//div[@class='comicInfo__artist']/a")
         item_artist = []

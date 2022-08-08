@@ -44,7 +44,7 @@ def get_element_data(driver, item_address, item_genre, i, item_adult):
     time.sleep(2)
     item_thumbnail = driver.find_element(By.XPATH, "//div[@class='ThumbnailInner']/img").get_attribute("src")
     item_title = driver.find_element(By.XPATH, "//span[@class='textSt tST18B tDark tDetailTopTextTitle']").text
-    item_date = "None"
+    item_date = ""
     item_finish_status = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextEpisode']").text
     if item_finish_status.find("완결") != -1:
         item_finish_status = "완결"
