@@ -49,33 +49,27 @@ class mongo_item:
     def update_date(db, arg = []):
         for i in arg:
             db["date"].update_one(
-                {"name" : i},
-                {'$set' : {"name" : i}},
+                {"date" : i},
+                {'$set' : {"date" : i}},
                 upsert=True
             )
             
     def validate_date(self, db):
         date_obj = []
         for date in self.date.split(","):
-            if db["date"].find_one({'name' : date}) == None: # date doesn't exist, such as "None", ""
+            if db["date"].find_one({'date' : date}) == None: # date doesn't exist, such as "None", ""
                 if self.finish_status == "연재":
                     date = "비정기"
                 else: 
                     date = "완결" 
-            date_obj.append({
-                "_id": db["date"].find_one({'name' : date})['_id'],
-                "name": date,
-                })
+            date_obj.append(db["date"].find_one({'date' : date})['_id'])
         return date_obj
         
             
     def update_webtoon(self, db):
         genre_obj = []
         for genre in self.genre_list:   
-            genre_obj.append({
-                "_id": db["genre"].find_one({'name' : genre})['_id'],
-                "name" : genre,
-                })
+            genre_obj.append(db["genre"].find_one({'name' : genre})['_id'])
         
         # if webtoon already exists, only update platform
         # 장르랑 date도 바꿔야하지 않을까?
@@ -121,18 +115,12 @@ class mongo_item:
                 # update artist worklist
                 db["artist"].update_one(
                     {"name" : artist_temp},
-                    {"$addToSet" : 
-                        {"work_list" : 
-                            {'_id' : webtoon_id,
-                             'name' : self.title}
-                        }
-                    }
+                    {"$addToSet" : {"work_list" : webtoon_id}}
                 )
-                
                 # create webtoon artist field
                 db["webtoon"].update_one(
                     {"_id" : webtoon_id},
-                    {"$addToSet" : {"artist" : {"_id" : artist_exist['_id'], "name" : artist_exist['name']}}}
+                    {"$addToSet" : {"artist" : artist_exist['_id']}}
                 )
             
             # if artist doesn't exist
@@ -140,26 +128,22 @@ class mongo_item:
                 # create artist document
                 self.artist = db["artist"].insert_one({ 
                     'name' : artist_temp,
-                    'work_list' : [{'_id' : webtoon_id, 'name' : self.title}]
+                    'work_list' : [webtoon_id]
                 })
                 # create webtoon artist field
                 db["webtoon"].update_one(
                     {"_id" : webtoon_id},
-                    {"$addToSet" : {"artist" : {"_id" : self.artist.inserted_id, "name" : artist_temp}}}
+                    {"$addToSet" : {"artist" : self.artist.inserted_id}}
                 )
         
     
     # 2022.8.5 플랫폼에 랭크차트 추적용 크롤링 날짜 추가
     def update_platform(self, db, webtoon_id, genre_obj):
-        # webtoon is in the platform collection
-        if db["platform"].find_one({'webtoon._id' : webtoon_id, 'name' : self.platform_name}) : 
-            webtoon_in_platform = db["platform"].find({'webtoon._id' : webtoon_id, 'name' : self.platform_name})
+        # webtoon is in a platform collection
+        if db["platform"].find_one({'webtoon' : webtoon_id, 'name' : self.platform_name}) : 
+            webtoon_in_platform = db["platform"].find({'webtoon' : webtoon_id, 'name' : self.platform_name})
             counter = 0
             for platform_document in webtoon_in_platform: # check all existent webtoon
-                print(genre_obj)
-                print(platform_document)
-                print(platform_document['genre'])
-                
                 if platform_document['genre'] in genre_obj: # if genre is same, update rank
                     db["platform"].update_one(
                         {"_id" : platform_document['_id']},
@@ -171,14 +155,14 @@ class mongo_item:
                         'name' : self.platform_name,
                         'genre' : platform_document['genre'],
                         'rank' : self.rank[counter],
-                        'webtoon' : {"_id": webtoon_id, "name": self.title},
+                        'webtoon' : webtoon_id,
                         'address' : self.address,
                         'update_time' : self.update_time,
                     })
                     # add genre into webtoon document
                     db["webtoon"].update_one(
                         {"_id" : webtoon_id},
-                        {"$addToSet" : {"platform" : {"_id" : platform_temp.inserted_id, "name": self.platform_name}}}
+                        {"$addToSet" : {"platform" : platform_temp.inserted_id}}
                     )
                 counter += 1      
             # 만약 webtoon이 platform에 아예 없으면 추가하고, 만약 존재한다면 순위 업데이트 하거나 새로 추가
@@ -191,14 +175,14 @@ class mongo_item:
                     'name' : self.platform_name,
                     'genre' : genre_obj[i],
                     'rank' : self.rank[i],
-                    'webtoon' : {"_id": webtoon_id, "name": self.title},
+                    'webtoon' : webtoon_id,
                     'address' : self.address,
                     'update_time' : self.update_time,
                 })
                 # add genre and platform into webtoon document
                 db["webtoon"].update_one(
                     {"_id" : webtoon_id},
-                    {"$addToSet" : {"platform" : {"_id" : platform_temp.inserted_id, "name": self.platform_name}}}
+                    {"$addToSet" : {"platform" : platform_temp.inserted_id}}
                     # "genre" : genre_obj[i] : 없으면 아래에서 만들었을테니까
                 )
             
@@ -207,7 +191,7 @@ class mongo_item:
                 'name' : self.platform_name,
                 'genre' : genre_obj[i],
                 'rank' : self.rank[i],
-                'webtoon' : {"_id": webtoon_id, "name": self.title},
+                'webtoon' : webtoon_id,
                 'address' : self.address,
                 'update_time' : self.update_time,
             })
@@ -235,14 +219,16 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
     CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
     client = MongoClient(CONNECTION_STRING)
-    mydb = client["react_test_name_index"]
+    mydb = client["react_test2"]
     
     genre_list = ["romance", "bl", "gl", "drama", "daily", "action", "gag", "fantasy", 
-                  "thrill/horror", "historical", "sports", "sensibility", "school", "erotic"]
-    genre_list_kor = ["로맨스", "BL", "GL", "드라마", "일상", "액션", "개그", "판타지", 
-                  "스릴/공포", "무협", "스포츠", "감성", "학교", "에로"]
+                  "thrill,horror", "historical", "sports", "sensibility", "school", "erotic"]
     
-    # day_list = ["mon", "tue", "wed", "thu", "fri", "sat", "sun", ""]
+    genre_list_kor = ["로맨스", "BL", "GL", "드라마", "일상", "액션", "개그", "판타지", 
+                  "스릴,공포", "무협", "스포츠", "감성", "학교", "에로"]
+    
+    # day_list = []
+    
     day_list_kor = ["월","화","수","목","금","토","일","연재","완결","열흘", "비정기"]
     
     mongo_item.update_genre(mydb, genre_list, genre_list_kor)
@@ -259,15 +245,15 @@ if __name__ == '__main__':
     #  tasks = map upper json key value
     
     # try: 
-    for task in tasks:
-        platform_name = task[:-3]
-        with open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(platform_name))) as file:
-            file_data = json.load(file)
-            for element in file_data.values():
-                element.insert(0, platform_name)
-                print(element)
-                temp = mongo_item(element, update_time)
-                temp.update_webtoon(mydb)
+    # for task in tasks:
+    #     platform_name = task[:-3]
+    #     with open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(platform_name))) as file:
+    #         file_data = json.load(file)
+    #         for element in file_data.values():
+    #             element.insert(0, platform_name)
+    #             print(element)
+    #             temp = mongo_item(element, update_time)
+    #             temp.update_webtoon(mydb)
     # except Exception as e:
     #     print(e)
     #     print(temp.title)
