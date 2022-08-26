@@ -1,11 +1,15 @@
 import os
 import time
 import subprocess
-import pymongo
+# import pymongo
 import datetime
 import json
 from pymongo import MongoClient
 from pathlib import Path
+from PIL import Image
+import boto3
+import requests
+from io import BytesIO
 
 class mongo_item:
     def __init__(self, element, update_time): 
@@ -102,7 +106,17 @@ class mongo_item:
                 'platform' : [],
                 'artist': []
                 })
+            
             webtoon_id = self.webtoon.inserted_id  # type(self.webtoon) <class 'pymongo.results.InsertOneResult'>
+            
+            response = requests.get(self.thumbnail)
+            s3.put_object(
+                Body=BytesIO(response.content),
+                Bucket=S3_BUCKET_NAME,
+                Key=str(webtoon_id),
+            )
+
+            
             
         self.update_artist(db, webtoon_id) 
         self.update_platform(db, webtoon_id, genre_obj)
@@ -211,12 +225,16 @@ class mongo_item:
                 'address' : self.address,
                 'update_time' : self.update_time,
             })
-            
+
 
 if __name__ == '__main__':
     start = time.time()
     update_time = datetime.datetime.now().isoformat()
     
+    s3 = boto3.client('s3')
+    S3_BUCKET_NAME = 'webtoonguru-thumbnail-jjy'
+
+
     # tasks = ['ktoon.py']
     tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py', 'naver.py', 'lezhin.py', 'onestory.py']
     # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py', 'kakao_webtoon.py']
@@ -235,7 +253,7 @@ if __name__ == '__main__':
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
     CONNECTION_STRING = "mongodb+srv://sab:Zmfhffldxptmxm123%21%40%23@sabmongo.uy5i9.mongodb.net/test"
     client = MongoClient(CONNECTION_STRING)
-    mydb = client["react_test_name_index"]
+    mydb = client["s3UploadTest"]
     
     genre_list = ["romance", "bl", "gl", "drama", "daily", "action", "gag", "fantasy", 
                   "thrill/horror", "historical", "sports", "sensibility", "school", "erotic"]
@@ -274,9 +292,8 @@ if __name__ == '__main__':
     
     # 나중에 수동으로 중복처리 몇개해야됨
     # 위에 클래스 설정은 다른 파일로 빼자
-                
-    print("total process time >> ", time.time() - start)  
     
+    print("total process time >> ", time.time() - start)  
     
     """ 안쓰는것들
     # json -> mongo manually save
