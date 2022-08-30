@@ -82,8 +82,8 @@ if __name__ == '__main__':
         url_list.append(base_url.format(u))
         
     # get login cookies
-    user_id = "tpa74231@gmail.com"
-    user_pw = "Fortest111!!!"
+    user_id = os.environ['CRAWLER_ID']
+    user_pw = os.environ['CRAWLER_PW']
     id_tag = "//input[@id='user_id']"
     pw_tag = "//input[@id='user_pw']"
     driver = driver_set()

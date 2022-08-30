@@ -22,7 +22,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     elif genre_tag == "comic":
         genre_tag = "gag"
     elif genre_tag == "thrill":
-        genre_tag = "thrill/horror"
+        genre_tag = "thrill+horror"
         
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
     driver.close()
@@ -42,8 +42,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_thumbnail = driver.find_element(By.XPATH, "//div[@class='comicinfo']/div/a/img").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//div[@class='detail']/h2/span[1]").text
         item_artist = driver.find_element(By.XPATH, "//span[@class='wrt_nm']").text
-        
-        
+            
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='detail']/p").text
         
         driver.implicitly_wait(0.2)
@@ -61,8 +60,9 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         # temporarily store
         item_date = "완결"
         item_finish_status = "완결"
-        item_artist = item_artist.split("/")
-        # item_artist = item_artist.replace(" ","").replace("/",",")
+        # 8.30 작가명에 ',' '/' 섞여있음. 만약 단일 작가명에 ,나 /가 포함되어 있을수도 있음
+        # ex) https://comic.naver.com/webtoon/list?titleId=784990 
+        item_artist = item_artist.replace("/",",").split(",")
         
         # if len(webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")) != 1:
         # if webtoon_elements[i].find_elements(By.XPATH, "child::a/child::span")[1].get_attribute("class") == "ico_cut":

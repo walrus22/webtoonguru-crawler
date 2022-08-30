@@ -35,9 +35,9 @@ def driver_set():
     # options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
     
     # chrome_driver = "/usr/local/bin/chromedriver" # Mac Chrome Driver path
-    chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
-    driver = webdriver.Chrome(chrome_driver, options=options)
-    # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    # chrome_driver = "C:\\Python\\chromedriver.exe" # Windows Chrome Driver path
+    # driver = webdriver.Chrome(chrome_driver, options=options)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     # # cmd : cd C:\Program Files\Google\Chrome\Application 
     # # chrome.exe --remote-debugging-port=9222 --user-data-dir="C:/ChromeTemp"
     # mac: sudo /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
@@ -145,10 +145,6 @@ def save_as_json(path_cwd, file_name, shared_dict_copy, start_time):
     with open(os.path.join(path_cwd, "module", "json", "{}.json".format(file_name)), "w") as file:
         json.dump(shared_dict_copy, file, separators=(',', ':'))
     print("{} >> ".format(file_name), time.time() - start_time)   
-
-
-def escape_apostrophe(str_temp):
-    return str_temp.replace("'","\\'")
 
 def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     time.sleep(random.uniform(2,3))

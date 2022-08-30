@@ -34,6 +34,8 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
         genre_tag = "fantasy"
     elif genre_tag == "bl/gl":
         genre_tag = ["bl", "gl"]
+    elif genre_tag == "thrill/horror":
+        genre_tag = "thrill+horror"
     
     # collect item url  
     webtoon_elements_url = []
@@ -100,8 +102,8 @@ if __name__ == '__main__':
         
     # get login cookies
     driver = driver_set()
-    user_id = "tpa74231@gmail.com"
-    user_pw = "Fortest111!!!"
+    user_id = os.environ['CRAWLER_ID']
+    user_pw = os.environ['CRAWLER_PW']
     id_tag = "//input[@id='useridWeb']"
     pw_tag = "//input[@id='passwdWeb']"
     get_url_untill_done(driver, "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq=100#")

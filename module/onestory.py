@@ -12,7 +12,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     
     # 22.8.6 unify genre 
     if genre_tag == "thrill":
-        genre_tag = "thrill/horror"
+        genre_tag = "thrill+horror"
     elif genre_tag == "adult":
         genre_tag = "erotic"
     
@@ -67,8 +67,8 @@ if __name__ == '__main__':
     get_url_untill_done(driver, "https://onestory.co.kr/member/login?redirectUri=%2F")
     driver.find_element(By.XPATH, "//div[@class='MemberLoginListItem facebook']/a").click()
     time.sleep(2)
-    user_id = "tpa74231@gmail.com"
-    user_pw = "Fortest111!!!"
+    user_id = os.environ['CRAWLER_ID']
+    user_pw = os.environ['CRAWLER_PW']
     id_tag = "//input[@id='email']"
     pw_tag = "//input[@id='pass']"
     login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)

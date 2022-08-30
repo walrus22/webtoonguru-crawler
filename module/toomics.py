@@ -2,7 +2,7 @@ from collector_setting import *
 import json
 from pathlib import Path
 from multiprocessing import Pool, Manager
-import  requests
+import requests
 
 def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult):
     # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
@@ -32,9 +32,7 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult)
     
     
     # 22.8.6 unify genre 
-    if genre_tag == "horror/thrill":
-        genre_tag = "thrill/horror"
-    elif genre_tag == "school/action":
+    if genre_tag == "school/action":
         genre_tag = ["school", "action"]
         
     if adult == True:
@@ -104,8 +102,8 @@ if __name__ == '__main__':
     get_url_untill_done(driver, "https://www.toomics.com/ko")
     driver.find_element(By.XPATH, "//a[@class='header__login']").click()
     time.sleep(1)
-    user_id = "tpa74231@gmail.com"
-    user_pw = "Fortest111!!!"
+    user_id = os.environ['CRAWLER_ID']
+    user_pw = os.environ['CRAWLER_PW']
     id_tag = "//input[@id='user_id']"
     pw_tag = "//input[@id='user_pw']"
     login_for_adult(driver, user_id, user_pw, id_tag, pw_tag)
@@ -118,7 +116,7 @@ if __name__ == '__main__':
     shared_dict = manager.dict()
     base_url = "https://www.toomics.com/webtoon/top100/genre/{}"
     genre_list = ["8", "1066", "5", "1065", "2570", "1444", "1443", "1441", "7"]
-    genre_name = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "thrill/horror", "bl"] 
+    genre_name = ["school/action", "fantasy", "drama", "romance", "gag", "sports", "historical", "thrill+horror", "bl"] 
     url_list=[]
     for u in genre_list:
         url_list.append(base_url.format(u))
@@ -126,7 +124,7 @@ if __name__ == '__main__':
 
     # collect item for adult site
     genre_list = ["5", "1065", "1066", "6", "1441", "1444", "7"]  #학원/액션, 개그 없음
-    genre_name = ["drama", "romance", "fantasy", "ssul",  "thrill/horror", "sports","bl"] 
+    genre_name = ["drama", "romance", "fantasy", "ssul",  "thrill+horror", "sports","bl"] 
     url_list=[]
     for u in genre_list:
         url_list.append(base_url.format(u))

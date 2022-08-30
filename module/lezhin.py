@@ -27,7 +27,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     if genre_tag == "day":
         genre_tag = "daily"
     elif genre_tag == "mystery":
-        genre_tag = "thrill/horror"
+        genre_tag = "thrill+horror"
     
     ### 7.21 avoid duplicate
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
@@ -98,8 +98,8 @@ if __name__ == '__main__':
     start = time.time()
     
     # get login cookies
-    user_id = "tpa74231@gmail.com"
-    user_pw = "Fortest111!!!"
+    user_id = os.environ['CRAWLER_ID']
+    user_pw = os.environ['CRAWLER_PW']
     id_tag = "//input[@name='username']"
     pw_tag = "//input[@name='password']"
     driver = driver_set()
