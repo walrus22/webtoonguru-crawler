@@ -41,7 +41,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_thumbnail = driver.find_element(By.XPATH, "//img[@class='css-1ithwm4']").get_attribute("src")
         item_title = driver.find_element(By.XPATH, "//h2[@class='text-ellipsis css-jgjrt']").text
         item_date, item_finish_status = find_date(driver.find_elements(By.XPATH, "//div[@class='text-ellipsis css-7a7cma']")[0].text, end_comment= "완결", day_keyword=False, daylist_more=[])
-        item_artist = driver.find_elements(By.XPATH, "//div[@class='text-ellipsis css-7a7cma']")[1].text
+        item_artist = driver.find_elements(By.XPATH, "//div[@class='text-ellipsis css-7a7cma']")[1].text.split(',')
         
         # click detail button
         driver.find_element(By.XPATH, "//button[@data-key='isDescriptionOpen']").click()
@@ -49,9 +49,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='jsx-3755015728 descriptionBox descriptionBox_pc  lineHeight']").text
         item_adult = False # 카카오 페이지는 성인물 없나봄
         
+        insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
         
-        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, 
-                                      item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     return webtoon_data_dict
 
 def multip_cookie(shared_dict, url_list, genre_name):
@@ -69,7 +68,8 @@ if __name__ == '__main__':
     table_name = Path(__file__).stem + now
     
     genre_list = ["115", "116", "121", "69", "112", "119"] 
-    genre_name = ["fantasy", "drama", "romance", "romance+fantasy", "historical", "bl"]  # 소년 = fantasy
+    genre_name = [["fantasy","action"], "drama", "romance", ["romance","fantasy"], "historical", "bl"]  
+    # genre_name = ["fantasy", "drama", "romance", "romance+fantasy", "historical", "bl"]  # 소년 = fantasy
     
     base_url = "https://page.kakao.com/main?categoryUid=10&subCategoryUid={}"
     url_list=[]
@@ -78,25 +78,17 @@ if __name__ == '__main__':
         
     ### MANUALLY
     ### get login session cookie 
-    # driver = driver_set()
-    # get_url_untill_done(driver, "https://page.kakao.com/main")
-    # time.sleep(50) # time for login
-    # cookie_list = driver.get_cookies()
-    # pickle.dump(cookie_list, open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)),"wb"))     
-    # driver.close()
+    driver = driver_set()
+    get_url_untill_done(driver, "https://page.kakao.com/main")
+    time.sleep(50) # time for login
+    cookie_list = driver.get_cookies()
+    pickle.dump(cookie_list, open(os.path.join(os.getcwd(), "module", "cookies", "{}_cookie.pkl".format(Path(__file__).stem)),"wb"))     
+    driver.close()
     
     # main
     manager = Manager()
     shared_dict = manager.dict()
     multip_cookie(shared_dict, url_list, genre_name)
     shared_dict_copy = shared_dict.copy()
-    # json.dump(shared_dict_copy, file, separators=(',', ':'))
-    mydb = mysql_db("webtoon_db"+ now)
-    mydb.create_table(table_name)
-    for dict_value in shared_dict_copy.values():
-        mydb.insert_to_mysql(dict_value, table_name)
-    mydb.db.commit()
-    
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)
-    # file.close()
+    save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start)
     

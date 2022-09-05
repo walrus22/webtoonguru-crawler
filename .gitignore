@@ -1,3 +1,7 @@
-venv/
 .env
-cookies/
+etc.txt
+kyujanggak/
+venv-crawler/
+module/cookies/
+module/kakao_image/
+module/json/

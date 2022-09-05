@@ -6,8 +6,10 @@ from PIL import Image
 from multiprocessing import Pool, Manager
 import pickle
 from selenium.common.exceptions import WebDriverException
+from io import BytesIO
 
-
+import boto3
+from pymongo import MongoClient
 
 ################################# function setting ############################
 # https://stackoverflow.com/questions/47274852/mouse-scroll-wheel-with-selenium-webdriver-on-element-without-scrollbar/47287595#47287595
@@ -55,6 +57,7 @@ def collect_webtoon_data(shared_dict, url, genre_tag, counter):
     for elements in webtoon_elements:
         webtoon_elements_url.append(elements.get_attribute("href"))
     webtoon_elements_url.insert(0, driver.find_element(By.XPATH, "//a[@class='relative w-full h-full opacity-0 z-2 animate-fadeIn']").get_attribute("href"))
+    
     shared_dict.update(get_element_data(driver, webtoon_elements_url, genre_tag))
     
     driver.close()
@@ -65,21 +68,40 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
     item_rank = 0
     
+    
     for item_address in webtoon_elements_url: # len(webtoon_elements)
         # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         item_id = item_address[item_address.rfind("/")+1:]
         item_rank += 1
         get_url_untill_done(driver, item_address, 2, 3 ) # s
+        
         fore_temp = driver.find_elements(By.XPATH, "//div[@class='overflow-hidden absolute inset-0']/*")[0]
         if fore_temp.tag_name == "video":
-            foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
+            # foreground = Image.open(urlopen(fore_temp.get_attribute("poster"))).convert("RGBA")
+            fore_temp = fore_temp.find_element(By.XPATH, "./source").get_attribute("src")
+            os.system(f"ffmpeg -hide_banner -loglevel error -y -sseof -0.1 -vcodec libvpx-vp9 -i {fore_temp} -update 1 -q:v 1 -pix_fmt rgba -vframes 1 ./module/kakao_image/{item_id}.png")
+            foreground = Image.open(f'./module/kakao_image/{item_id}.png')
         else :
             foreground = Image.open(urlopen(fore_temp.find_element(By.XPATH, "./img").get_attribute("src"))).convert("RGBA")
         background = Image.open(urlopen(driver.find_element(By.XPATH, "//picture[@class='bg-content-home']/source").get_attribute("srcset"))).convert("RGBA")
         background.paste(foreground, (20, 150), foreground) # fore: 710x600 , back: 750x13??
         img = background.crop((0,0,750,750))
-        img.save(os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))) 
-        item_thumbnail = os.path.join(os.getcwd(), "kakao_image", "{}.png".format(item_id))
+        img.save(os.path.join(os.getcwd(), "module", "kakao_image", f"{item_id}.png")) 
+        
+        # buffer = BytesIO()
+        # img.save(buffer, 'png')
+        # item_thumbnail = buffer.getvalue()
+        
+        # s3 = boto3.client('s3')
+        # S3_BUCKET_NAME = os.environ['S3_BUCKET']
+        # s3.put_object(
+        #     Body=item_thumbnail,
+        #     Bucket=S3_BUCKET_NAME,
+        #     Key='test',
+        # )
+        
+        item_thumbnail = os.path.join("module", "kakao_image", "{}.png".format(item_id))
+
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
         
         # get element and mouse wheel down
@@ -94,16 +116,16 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         # get detail info
         item_title = driver.find_element(By.XPATH, "//p[@class='whitespace-pre-wrap break-all break-words support-break-word mt-8 s22-semibold-white']").text
         item_artist_list = driver.find_elements(By.XPATH, "//div[@class='flex mb-7']")
-        item_artist_list.pop()
-        item_artist = ""
+        item_artist_list.pop() # 발행처 빼기
+        
+        # 9.4 artist : str -> list
+        item_artist = []
         for i in range(len(item_artist_list)):
-            item_artist_temp = item_artist_list[i].find_element(By.XPATH, "./dd").text
-            if i == 0:
-                item_artist += item_artist_temp
-            else:
-                if item_artist.find(item_artist_temp) != -1: # prevent duplicate
-                    continue
-                item_artist += "," + item_artist_temp
+            item_artist_temp = item_artist_list[i].find_element(By.XPATH, "./dd").text.split(",")
+            for artist in item_artist_temp:
+                artist = artist.strip()
+                if artist not in item_artist:
+                    item_artist.append(artist)
         
         item_adult = False
         date_finish_temp = driver.find_elements(By.XPATH, "//div[@class='mx-20 -mt-2']/div[1]/*") # div가 
@@ -115,10 +137,9 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
                 data_string += date_element.text
         item_date, item_finish_status = find_date(data_string, "완결", False)
         
-
         # item_etc_status = driver.find_element(By.XPATH, "")
-        webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, 
-                                      item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+        insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult) 
+
     return webtoon_data_dict
 
 # def multip(shared_dict, url_list, genre_list, cookie_list):
@@ -133,11 +154,6 @@ def multip(shared_dict, url_list, genre_list):
 
 if __name__ == '__main__':
     start = time.time()
-    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
-    table_name = Path(__file__).stem + now
-    # file = open(os.path.join(os.getcwd(), "module", "json", "{}.json".format(Path(__file__).stem)), "w")
-    genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "thrill/horror", "comic/daily"] # 사이트별 설정 
-    base_url = "https://webtoon.kakao.com/ranking"
     
     #### manually ### 
     #### get login session cookie ####
@@ -149,16 +165,14 @@ if __name__ == '__main__':
     # driver.close()
 
     # multi-processing
+    # genre_list = [['fantasy', 'drama']] 
+    # genre_list = ["fantasy+drama", "romance", "school+action+fantasy", "romance+fantasy", "action+historical", "drama", "thrill+horror", "comic/daily"] 
+    genre_list = [['fantasy', 'drama'], "romance", ["school","action","fantasy"], ["romance","fantasy"], ["action","historical"], "drama", "thrill+horror", ["gag","daily"]] 
+    base_url = "https://webtoon.kakao.com/ranking"
+    
+    # main
     manager = Manager()
     shared_dict = manager.dict()
     multip(shared_dict, base_url, genre_list)
     shared_dict_copy = shared_dict.copy()
-    # json.dump(shared_dict_copy, file, separators=(',', ':'))
-    # file.close()
-    mydb = mysql_db("webtoon_db"+ now)
-    mydb.create_table(table_name)
-    for dict_value in shared_dict_copy.values():
-        mydb.insert_to_mysql(dict_value, table_name)
-    mydb.db.commit()
-    
-    print("{} >> ".format(Path(__file__).stem), time.time() - start)
+    save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start)

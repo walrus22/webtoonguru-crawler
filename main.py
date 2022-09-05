@@ -109,15 +109,23 @@ class mongo_item:
             
             webtoon_id = self.webtoon.inserted_id  # type(self.webtoon) <class 'pymongo.results.InsertOneResult'>
             
-            response = requests.get(self.thumbnail)
-            s3.put_object(
-                Body=BytesIO(response.content),
-                Bucket=S3_BUCKET_NAME,
-                Key=str(webtoon_id),
-            )
+            if self.platform_name == 'kakao_webtoon':
+                img = open(os.path.join(os.getcwd(), "module", "kakao_image", "{}.png".format(self.item_id)),'rb')
+                # img.show()
+                s3.put_object(
+                    Body=img,
+                    Bucket=S3_BUCKET_NAME,
+                    Key=str(webtoon_id),
+                )
+                
+            else :
+                response = requests.get(self.thumbnail)
+                s3.put_object(
+                    Body=BytesIO(response.content),
+                    Bucket=S3_BUCKET_NAME,
+                    Key=str(webtoon_id),
+                )
 
-            
-            
         self.update_artist(db, webtoon_id) 
         self.update_platform(db, webtoon_id, genre_obj)
             
@@ -230,29 +238,28 @@ class mongo_item:
 if __name__ == '__main__':
     start = time.time()
     update_time = datetime.datetime.now().isoformat()
-    
     s3 = boto3.client('s3')
-    S3_BUCKET_NAME = 'webtoonguru-thumbnail-jjy'
-
-    # tasks = ['ktoon.py']
+    S3_BUCKET_NAME = os.environ['S3_BUCKET']
+    
+    # tasks = ['kakao_page.py']
     tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py', 'naver.py', 'lezhin.py', 'onestory.py']
-    # orignial tasks = ['bomtoon.py', 'kakao_page.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py', 'kakao_webtoon.py']
+    # orignial tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py', 'kakao_webtoon.py', 'kakao_page.py']
 
     ### Multiprocessor Crawling ##
-    process_list = []
-    for task in tasks:
-        # process_list.append(subprocess.Popen(["python", os.path.join(os.getcwd(), "module", task)])) # win
-        process_list.append(subprocess.Popen(["python3", os.path.join(os.getcwd(), "module", task)])) # mac
-    for p in process_list:
-        time.sleep(0.5)
-        p.wait()
-    print("total crawling time >> ", time.time() - start)  
+    # process_list = []
+    # for task in tasks:
+    #     process_list.append(subprocess.Popen(["python", os.path.join(os.getcwd(), "module", task)])) # win
+    #     # process_list.append(subprocess.Popen(["python3", os.path.join(os.getcwd(), "module", task)])) # mac
+    # for p in process_list:
+    #     time.sleep(0.5)
+    #     p.wait()
+    # print("total crawling time >> ", time.time() - start)  
     
     # store json file into mongodb 
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
     CONNECTION_STRING = os.environ['MONGO_URI']
     client = MongoClient(CONNECTION_STRING)
-    mydb = client["0830"]
+    mydb = client["webtoonGuru"]
     
     genre_list = ["romance", "bl", "gl", "drama", "daily", "action", "gag", "fantasy", 
                   "thrill+horror", "historical", "sports", "sensibility", "school", "erotic"]

@@ -44,7 +44,7 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult)
     # print(genre_tag)
     
         
-    ### 7.21 avoid duplicate
+    ### 7.21 avoid duplication
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag, adult), shared_dict)
     driver.close()
     return 

@@ -72,7 +72,7 @@ def multip_cookie(shared_dict, url_list, genre_list, genre_name, cookie_list):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
-    now = datetime.datetime.now().strftime('_%Y%m%d_%H')
+    # now = datetime.datetime.now().strftime('_%Y%m%d_%H')
     
     genre_list = [4, 3] # 사이트별 설정 
     genre_name = ["bl", "romance"] 
