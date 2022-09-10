@@ -1,7 +1,13 @@
 .env
 etc.txt
+.vscode/
+.DS_Store
+__pycache__/
+
 kyujanggak/
 venv-crawler/
 module/cookies/
+module/__pycache__
 module/kakao_image/
 module/json/
+module/cookies/kakao_page_cookie.pkl
