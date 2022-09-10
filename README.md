@@ -1,1 +1,1 @@
-# Webtoon cata crawler for webtoonguru
+# Webtoon data crawler for webtoonguru
