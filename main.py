@@ -10,6 +10,51 @@ from PIL import Image
 import boto3
 import requests
 from io import BytesIO
+from collections import Counter
+
+def is_meaningful_pix(pix, dominant_color):
+    for i in range(len(pix)):
+        diff = abs(pix[i] - dominant_color[i]) / 255
+        if diff <= 30/255:
+            continue
+        else : 
+            return True
+    return False
+
+def trim_side_background(img):
+    dominant_color = Counter(list(img.getdata())).most_common(1)[0][0]
+    pix = img.load()
+    meaningful_zone_borders = []
+    is_meaningful_zone = False
+
+    for x in range(img.size[0]):
+        for y in range(img.size[1]):
+            
+            # if pix[x,y] != dominant_color:
+            if is_meaningful_pix(pix[x,y], dominant_color):
+                if is_meaningful_zone == False: # zone start
+                    is_meaningful_zone = True
+                    meaningful_zone_borders.append(x) 
+                break # if already in zone, skip
+            elif y == img.size[1]-1: # all pix[x,y] == dominant column
+                if is_meaningful_zone == True:
+                    meaningful_zone_borders.append(x-1) 
+                is_meaningful_zone = False
+            
+    if len(meaningful_zone_borders)%2 == 1: # last column 
+        meaningful_zone_borders.append(img.size[1])
+
+    max = 0
+    for i in range(len(meaningful_zone_borders)):
+        if i == len(meaningful_zone_borders)-1:
+            break
+        if max <= meaningful_zone_borders[i+1] - meaningful_zone_borders[i]:
+            max = meaningful_zone_borders[i+1] - meaningful_zone_borders[i]
+            meaningful_start = meaningful_zone_borders[i]
+            meaningful_end = meaningful_zone_borders[i+1]
+            
+    img =  img.crop((meaningful_start, 0, meaningful_end, img.size[1]))
+    return img
 
 class mongo_item:
     def __init__(self, element, update_time): 
@@ -47,8 +92,6 @@ class mongo_item:
                 {'$set' : {"name" : genre_list[i], "name_kor": genre_list_kor[i]}},
                 upsert=True
             )
-        
-        
             
     def update_date(db, arg = []):
         for i in arg:
@@ -89,7 +132,7 @@ class mongo_item:
             # 만약 연재중이던게 완결나면?
             # 썸네일 바뀌면?
             # 장르 추가 => update_platform
-            webtoon_id = webtoon_exist['_id']
+            webtoon_id = webtoon_exist['_id']        
             
         # if webtoon doesn't exist, create
         else: 
@@ -117,6 +160,20 @@ class mongo_item:
                     Bucket=S3_BUCKET_NAME,
                     Key=str(webtoon_id),
                 )
+                
+                if self.thumbnail.index("mrblue") != -1:
+                    response = requests.get(self.thumbnail)
+                    img = Image.open(BytesIO(response.content))
+                    img = trim_side_background(img)
+                    buffer = BytesIO()
+                    img.save(buffer, "webp")
+                    buffer.seek
+                    s3.put_object(
+                        Body=buffer,
+                        Bucket=S3_BUCKET_NAME,
+                        Key=str(webtoon_id) + "-trim",
+                )
+                
                 
             else :
                 response = requests.get(self.thumbnail)
@@ -178,9 +235,9 @@ class mongo_item:
             webtoon_in_platform = db["platform"].find({'webtoon._id' : webtoon_id, 'name' : self.platform_name})
             counter = 0
             for platform_document in webtoon_in_platform: # check all existent webtoon
-                print(genre_obj)
-                print(platform_document)
-                print(platform_document['genre'])
+                # print(genre_obj)
+                # print(platform_document)
+                # print(platform_document['genre'])
                 
                 if platform_document['genre'] in genre_obj: # if genre is same, update rank
                     db["platform"].update_one(
@@ -233,6 +290,7 @@ class mongo_item:
                 'address' : self.address,
                 'update_time' : self.update_time,
             })
+            
 
 
 if __name__ == '__main__':
@@ -241,8 +299,8 @@ if __name__ == '__main__':
     s3 = boto3.client('s3')
     S3_BUCKET_NAME = os.environ['S3_BUCKET']
     
-    # tasks = ['kakao_page.py']
-    tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py', 'naver.py', 'lezhin.py', 'onestory.py']
+    tasks = ['toptoon.py']
+    # tasks = ['bomtoon.py', 'ktoon.py', 'mrblue.py', 'toomics.py', 'naver.py', 'lezhin.py', 'onestory.py']
     # orignial tasks = ['bomtoon.py', 'ktoon.py', 'lezhin.py', 'mrblue.py', 'naver.py', 'onestory.py', 'toomics.py', 'kakao_webtoon.py', 'kakao_page.py']
 
     ### Multiprocessor Crawling ##
@@ -257,9 +315,16 @@ if __name__ == '__main__':
     
     # store json file into mongodb 
     now = datetime.datetime.now().strftime('_%Y%m%d_%H')    
-    CONNECTION_STRING = os.environ['MONGO_URI']
+    
+    # Mongo Atlas
+    # CONNECTION_STRING = os.environ['MONGO_URI_ATLAS']
+    # client = MongoClient(CONNECTION_STRING)
+    # mydb = client["webtoonGuru_test"]
+    
+    # Mongo remote
+    CONNECTION_STRING = os.environ['MONGO_URI_REMOTE']
     client = MongoClient(CONNECTION_STRING)
-    mydb = client["webtoonGuru"]
+    mydb = client["webtoonpedia"]
     
     genre_list = ["romance", "bl", "gl", "drama", "daily", "action", "gag", "fantasy", 
                   "thrill+horror", "historical", "sports", "sensibility", "school", "erotic"]
@@ -271,7 +336,6 @@ if __name__ == '__main__':
     
     mongo_item.update_genre(mydb, genre_list, genre_list_kor)
     mongo_item.update_date(mydb, day_list_kor)
-    
     
     #  {
     #    "ktoon" : {
