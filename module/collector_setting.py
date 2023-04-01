@@ -132,7 +132,11 @@ def insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item
         webtoon_data_dict[item_id] = [item_id, item_genre, item_address, item_rank, item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
     else :
         webtoon_data_dict[item_id] = [item_id, [item_genre], item_address, [item_rank], item_thumbnail, item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult]
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> f010de389d935f4c0b52548462ef21a3fc548b9f
 def is_adult(adult_string, key_word):
     if adult_string.find(key_word) != -1: # adult
         return True
@@ -153,5 +157,8 @@ def login_for_adult(driver, user_id, user_pw, id_tag, pw_tag):
     driver.find_element(By.XPATH, pw_tag).send_keys(Keys.ENTER)
     time.sleep(random.uniform(3,5))
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> f010de389d935f4c0b52548462ef21a3fc548b9f
