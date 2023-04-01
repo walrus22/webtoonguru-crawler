@@ -203,11 +203,10 @@ class mongo_item:
                     {"$addToSet" : 
                         {"work_list" : 
                             {'_id' : webtoon_id,
-                             'name' : self.title}
+                            'name' : self.title}
                         }
                     }
                 )
-                
                 # create webtoon artist field
                 db["webtoon"].update_one(
                     {"_id" : webtoon_id},
@@ -235,15 +234,11 @@ class mongo_item:
             webtoon_in_platform = db["platform"].find({'webtoon._id' : webtoon_id, 'name' : self.platform_name})
             counter = 0
             for platform_document in webtoon_in_platform: # check all existent webtoon
-                # print(genre_obj)
-                # print(platform_document)
-                # print(platform_document['genre'])
-                
                 if platform_document['genre'] in genre_obj: # if genre is same, update rank
                     db["platform"].update_one(
                         {"_id" : platform_document['_id']},
                         {"$set" : {"rank" : self.rank[counter],
-                                   'update_time' : self.update_time}}             
+                                    'update_time' : self.update_time}}             
                     )
                 else: # if this genre doesn't exist, create
                     platform_temp = db["platform"].insert_one({
@@ -326,10 +321,14 @@ if __name__ == '__main__':
     client = MongoClient(CONNECTION_STRING)
     mydb = client["webtoonpedia"]
     
+    # mongodump --out 덤프지정위치(디렉터리) --host 127.0.0.1 --port 27017 -u계정명 -p계정비번 --db 선택적으로 복구하려는 db명
+    
+    
+    
     genre_list = ["romance", "bl", "gl", "drama", "daily", "action", "gag", "fantasy", 
-                  "thrill+horror", "historical", "sports", "sensibility", "school", "erotic"]
+                    "thrill+horror", "historical", "sports", "sensibility", "school", "erotic"]
     genre_list_kor = ["로맨스", "BL", "GL", "드라마", "일상", "액션", "개그", "판타지", 
-                  "스릴/공포", "무협", "스포츠", "감성", "학교", "에로"]
+                        "스릴/공포", "무협", "스포츠", "감성", "학교", "에로"]
     
     # day_list = ["mon", "tue", "wed", "thu", "fri", "sat", "sun", ""]
     day_list_kor = ["월","화","수","목","금","토","일","연재","완결","열흘", "비정기"]
@@ -340,7 +339,7 @@ if __name__ == '__main__':
     #  {
     #    "ktoon" : {
     # 			"taskFile" : "ktoon.py",
-    #      "genre" : [ sex ],
+    #      "genre" : [ asd ],
     # 		},
     #    ...
     #  }

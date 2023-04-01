@@ -40,7 +40,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
     counter = 0
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
-        # get_url_untill_done(driver, item_address,3,4)
         get_url_untill_done(driver, item_address,0,0)
         item_rank += 1
         item_id = item_address[item_address.rfind("/")+1:]
@@ -55,13 +54,7 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_artist = []
         for i in item_artist_list:
             item_artist.append(i.text)
-        
-        # for i in range(len(item_artist_list)):
-        #     if i == 0 :
-        #         item_artist = item_artist_list[i].text
-        #     else : 
-        #         item_artist += "," + item_artist_list[i].text
-        
+
         item_adult = driver.find_element(By.XPATH, "//span[@class='comicInfo__rating']").text
         if item_adult.find("19세") != -1: # adult
             item_adult = True
@@ -81,14 +74,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
             else:
                 item_synopsis += "\n" + item_synopsis_list[i].text 
         insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
-        
-        # counter+=1
-        # print("" +item_genre + " >> " + str(counter) + "")
-        # if item_synopsis and not item_synopsis.isspace():
-        #     print(item_synopsis)
-        # else:
-        #     print(item_synopsis)
-        #     print('String is empty')
         
     return webtoon_data_dict
 
@@ -111,7 +96,6 @@ if __name__ == '__main__':
     
     # main
     genre_list = ["romance", "bl", "drama", "fantasy", "gag", "action", "school", "mystery", "day", "gl"] # 사이트별 설정 
-    # genre_list = ["romance", "school", "mystery"] # 사이트별 설정 
     base_url = "https://www.lezhin.com/ko/ranking/detail?genre={}&type=realtime"
     shared_dict_copy = collect_multiprocessing(10, collect_webtoon_data, base_url, genre_list, cookie_list) 
     

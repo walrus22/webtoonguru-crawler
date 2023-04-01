@@ -69,7 +69,6 @@ if __name__ == '__main__':
     
     genre_list = ["115", "116", "121", "69", "112", "119"] 
     genre_name = [["fantasy","action"], "drama", "romance", ["romance","fantasy"], "historical", "bl"]  
-    # genre_name = ["fantasy", "drama", "romance", "romance+fantasy", "historical", "bl"]  # 소년 = fantasy
     
     base_url = "https://page.kakao.com/main?categoryUid=10&subCategoryUid={}"
     url_list=[]

@@ -47,7 +47,6 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag), shared_dict)
     driver.close()
     return 
-           
     
 def get_element_data(driver, webtoon_elements_url, item_genre):
     webtoon_data_dict = {}
@@ -68,12 +67,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         item_artist = []
         for i in artist_list:
             item_artist.append(i.text)
-        
-        # item_artist = ""
-        # for k in artist_list:
-        #     item_artist += k.text
-        #     if artist_list.index(k) != len(artist_list)-1:
-        #         item_artist += ","
     
         if item_title.find("19세이상") != -1:
             item_adult = True
@@ -93,8 +86,6 @@ if __name__ == '__main__':
     start = time.time()
     genre_list = ["123", "118", "3", "5", "1", "6", "8", "16", "109", "113"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
     genre_name = ["romance", "bl/gl", "gag", "drama", "daily", "fantasy/SF", "sensibility", "action", "thrill/horror", "school"]
-    # genre_list = [ "118"] # 로맨스, bl/gl, 개그, 드라마, 일상, 판타지/SF, 감성, 액션, 스릴러/공포, 학원
-    # genre_name = ["bl/gl"]
     base_url = "https://www.myktoon.com/web/webtoon/works_list.kt?genreseq={}"
     url_list=[]
     for u in genre_list:

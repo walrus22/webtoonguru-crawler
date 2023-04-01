@@ -52,8 +52,6 @@ def get_element_data(driver, item_address, item_genre, i, item_adult):
         item_finish_status = "연재"
     item_synopsis = "None"
     item_artist = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextArtist']").text.split(",")
-    # item_artist = driver.find_element(By.XPATH, "//span[@class='textSt tB14 tMedium tEllipsis DetailTopTextArtist']").text
-    
     insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
     
     return webtoon_data_dict
@@ -79,8 +77,6 @@ if __name__ == '__main__':
     ### main
     genre_list = ["26002", "26009", "26003", "26006", "26005", "26007", "26001", "26004","26011"] 
     genre_name = ["romance", "bl", "drama", "action", "fantasy", "daily", "gag", "thrill","adult"] 
-    # genre_list = ["26002", "26009", "26003"]
-    # genre_name = ["romance", "bl", "drama"] # dict으로 만들어도 될것같은데 {genre_list : genre_name..}
     base_url = "https://onestory.co.kr/display/rank/webtoon/DP{}?title=%EC%9B%B9%ED%88%B0%20%EB%9E%AD%ED%82%B9"
     shared_dict_copy = collect_multiprocessing(1, collect_webtoon_data, base_url, genre_list, cookie_list, genre_name=genre_name)
     save_as_json(os.getcwd(), Path(__file__).stem, shared_dict_copy, start)

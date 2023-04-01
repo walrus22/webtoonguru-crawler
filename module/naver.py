@@ -13,9 +13,6 @@ def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list):
     for element in webtoon_elements:
         webtoon_elements_url.append(element.find_element(By.XPATH, "./a").get_attribute("href"))
     
-    #test
-    # webtoon_elements_url = webtoon_elements_url[:5]
-    
     # 22.8.6 unify genre 
     if genre_tag == "pure":
         genre_tag = "romance"
@@ -77,7 +74,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
 if __name__ == '__main__':
     start = time.time()
     genre_list = ["daily", "comic", "fantasy", "action", "drama", "pure", "sensibility", "thrill", "historical", "sports"] 
-    # genre_list = ["thrill"] 
     base_url = "https://comic.naver.com/webtoon/genre?genre={}"
     shared_dict_copy = collect_multiprocessing(1, collect_webtoon_data, base_url, genre_list)
     

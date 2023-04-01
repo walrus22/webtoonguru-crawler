@@ -41,9 +41,6 @@ def collect_webtoon_data_cookie(shared_dict, url, genre_tag, cookie_list, adult)
         else:
             genre_tag = ["erotic"] + list(genre_tag.split())
             
-    # print(genre_tag)
-    
-        
     ### 7.21 avoid duplication
     catch_duplicate(get_element_data(driver, webtoon_elements_url, genre_tag, adult), shared_dict)
     driver.close()
@@ -54,7 +51,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre, adult):
     item_rank = 0
     
     for item_address in webtoon_elements_url: # len(webtoon_elements)
-        # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.COMMAND + 't') # creat new tab. 이동해야 하는 경우 사용
         get_url_untill_done(driver, item_address, 1, 2)
         item_rank += 1
         item_id = item_address[item_address.rfind("/")+1:]
@@ -74,7 +70,6 @@ def get_element_data(driver, webtoon_elements_url, item_genre, adult):
             item_date, item_finish_status = find_date(item_date, end_comment="완결", day_keyword=False, daylist_more=[])
             
         item_synopsis = driver.find_element(By.XPATH, "//div[@class='episode__summary']").text
-        # item_artist = driver.find_element(By.XPATH, "//dl[@class='episode__author']/dd").text.replace("/",",")
         item_artist = driver.find_element(By.XPATH, "//dl[@class='episode__author']/dd").text.split("/")
         item_adult = adult
         
@@ -96,7 +91,7 @@ def multip_cookie(shared_dict, url_list, genre_list, cookie_list, adult):
 ###########################################################################
 if __name__ == '__main__':
     start = time.time()
- 
+    
     # get login cookies
     driver = driver_set()
     get_url_untill_done(driver, "https://www.toomics.com/ko")

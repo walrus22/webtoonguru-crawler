@@ -34,8 +34,6 @@ with urllib.request.urlopen(total_url) as url:
         webtoon_data_dict = {}
         webtoon_data_dict_temp = {}
         for item in data:
-            # print('-----------------------------------')
-            # print(item)
             item_id = item['id']
             
             # genre 없는 애들이 너무 많음
@@ -53,9 +51,7 @@ with urllib.request.urlopen(total_url) as url:
             if item_genre == []:
                 item_genre = ["romance"]
                 
-            res = [*set(item_genre)] # 중복 제거
-            # print(item_genre)
-
+            item_genre = [*set(item_genre)] # 중복 제거
             item_address = "https://toptoon.com" + item['meta']['comicsListUrl']
             item_thumbnail = item['thumbnail']['landscape']
             item_title = item['meta']['title']
@@ -77,9 +73,31 @@ with urllib.request.urlopen(total_url) as url:
         # print(webtoon_data_dict_temp)
         webtoon_data_dict_sorted = sorted(webtoon_data_dict_temp.items(), key=lambda x: x[1][3][0], reverse=True)
         
+        genre_rank = {
+            "romance" : 1,
+            "drama": 1,
+            "daily": 1,
+            "sensibility": 1,
+            "gag" : 1,
+            "fantasy": 1,
+            "thrill+horror": 1,
+            "action": 1,
+            "historical": 1,
+            "school": 1,
+            "sports": 1,
+            "bl": 1,
+            "gl": 1,
+            "erotic": 1,
+            }
+        
+        
         for i in range(len(webtoon_data_dict_sorted)):
             # rank 
-            webtoon_data_dict_sorted[i][1][3] = [i+1] * len(webtoon_data_dict_sorted[i][1][3])
+            webtoon_data_dict_sorted[i][1][3] = []
+            for genre_name in webtoon_data_dict_sorted[i][1][1]:
+                webtoon_data_dict_sorted[i][1][3].append(genre_rank[genre_name])
+                genre_rank[genre_name] += 1
+            
             # list to dict
             webtoon_data_dict[webtoon_data_dict_sorted[i][1][0]] = webtoon_data_dict_sorted[i][1]
         

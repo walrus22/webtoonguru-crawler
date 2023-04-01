@@ -54,21 +54,10 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
             else:
                 item_artist += re.split(r',\s*(?![^()]*\))', author.text)
             
-            
-        # item_artist = ""
-        # first = True
-        # for author in driver.find_elements(By.XPATH, "//span[@class='authorname long'] | //span[@class='authorname']"):
-        #     author = author.text
-        #     if first == True:
-        #         first = False
-        #     else:
-        #         item_artist += ","
-        #     item_artist += author
-        
         insert_data(webtoon_data_dict,item_id,item_genre,item_address,item_rank,item_thumbnail,item_title, item_date, item_finish_status, item_synopsis, item_artist, item_adult)
         
     return webtoon_data_dict
-  
+
 ################################################################################
 if __name__ == '__main__':
     start = time.time()

@@ -1,14 +1,18 @@
 .env
+
 etc.txt
 .vscode/
 .DS_Store
 __pycache__/
 
+
+
+
+etc/
 kyujanggak/
 venv-crawler/
 module/cookies/
 module/__pycache__
 module/kakao_image/
-module/json/
-module/cookies/kakao_page_cookie.pkl
+module/json
 webtoonguru.code-workspace

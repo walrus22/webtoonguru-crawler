@@ -14,26 +14,26 @@ from pymongo import MongoClient
 ################################# function setting ############################
 # https://stackoverflow.com/questions/47274852/mouse-scroll-wheel-with-selenium-webdriver-on-element-without-scrollbar/47287595#47287595
 def wheel_element(element, deltaY = 120, offsetX = 0, offsetY = 0):
-  error = element._parent.execute_script("""
-    var element = arguments[0];
-    var deltaY = arguments[1];
-    var box = element.getBoundingClientRect();
-    var clientX = box.left + (arguments[2] || box.width / 2);
-    var clientY = box.top + (arguments[3] || box.height / 2);
-    var target = element.ownerDocument.elementFromPoint(clientX, clientY);
+    error = element._parent.execute_script("""
+        var element = arguments[0];
+        var deltaY = arguments[1];
+        var box = element.getBoundingClientRect();
+        var clientX = box.left + (arguments[2] || box.width / 2);
+        var clientY = box.top + (arguments[3] || box.height / 2);
+        var target = element.ownerDocument.elementFromPoint(clientX, clientY);
 
-    for (var e = target; e; e = e.parentElement) {
-      if (e === element) {
-        target.dispatchEvent(new MouseEvent('mouseover', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
-        target.dispatchEvent(new MouseEvent('mousemove', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
-        target.dispatchEvent(new WheelEvent('wheel',     {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY, deltaY: deltaY}));
-        return;
-      }
-    }    
-    return "Element is not interactable";
+        for (var e = target; e; e = e.parentElement) {
+            if (e === element) {
+                target.dispatchEvent(new MouseEvent('mouseover', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
+                target.dispatchEvent(new MouseEvent('mousemove', {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY}));
+                target.dispatchEvent(new WheelEvent('wheel',     {view: window, bubbles: true, cancelable: true, clientX: clientX, clientY: clientY, deltaY: deltaY}));
+                return;
+            }
+        }    
+        return "Element is not interactable";
     """, element, deltaY, offsetX, offsetY)
-  if error:
-    raise WebDriverException(error)
+    if error:
+        raise WebDriverException(error)
 
 def collect_webtoon_data(shared_dict, url, genre_tag, counter):
 # def collect_webtoon_data(shared_dict, url, genre_tag, cookie_list, counter):
@@ -87,21 +87,8 @@ def get_element_data(driver, webtoon_elements_url, item_genre):
         background.paste(foreground, (20, 150), foreground) # fore: 710x600 , back: 750x13??
         img = background.crop((0,0,750,750))
         img.save(os.path.join(os.getcwd(), "module", "kakao_image", f"{item_id}.png")) 
-        
-        # buffer = BytesIO()
-        # img.save(buffer, 'png')
-        # item_thumbnail = buffer.getvalue()
-        
-        # s3 = boto3.client('s3')
-        # S3_BUCKET_NAME = os.environ['S3_BUCKET']
-        # s3.put_object(
-        #     Body=item_thumbnail,
-        #     Bucket=S3_BUCKET_NAME,
-        #     Key='test',
-        # )
-        
-        item_thumbnail = os.path.join("module", "kakao_image", "{}.png".format(item_id))
 
+        item_thumbnail = os.path.join("module", "kakao_image", "{}.png".format(item_id))
         item_synopsis = driver.find_element(By.XPATH, "//meta[@name='description']").get_attribute("content")
         
         # get element and mouse wheel down
