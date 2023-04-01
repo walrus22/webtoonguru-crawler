@@ -1,6 +1,5 @@
 .env
 
-etc.txt
 .vscode/
 .DS_Store
 __pycache__/
@@ -10,6 +9,7 @@ __pycache__/
 etc/
 kyujanggak/
 venv-crawler/
+
 module/cookies/
 module/__pycache__
 module/kakao_image/
